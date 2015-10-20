@@ -49,6 +49,7 @@
     <Compile Include="Options.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reporter\SummaryConsoleReporter.cs" />
     <Compile Include="Reporter\DetailedConsoleReporter.cs" />
     <Compile Include="Reporter\ConsoleReporter.cs" />
     <Compile Include="Reporter\HtmlReporter.cs" />

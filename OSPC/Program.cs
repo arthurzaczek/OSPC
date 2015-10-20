@@ -15,6 +15,7 @@ namespace OSPC
             var filter = new List<string>();
             var dirs = new List<string>();
             bool detailed = false;
+            bool summary = false;
 
             Console.WriteLine("Open Software Plagiarism Checker");
             Console.WriteLine("================================");
@@ -26,6 +27,7 @@ namespace OSPC
                 { "f=", v => filter.Add(v) },
                 { "d=", v => dirs.Add(v) },
                 { "detailed", v => detailed = true },
+                { "summary", v => summary = true },
             };
 
             var extra = p.Parse(args);
@@ -70,6 +72,7 @@ namespace OSPC
             }
 
             Console.WriteLine();
+            Console.WriteLine();
 
             results = results
                 .Where(r => r.MatchCount > 0)
@@ -77,7 +80,19 @@ namespace OSPC
                 .ToList();
 
             Reporter.IReporter html = new Reporter.HtmlReporter();
-            Reporter.IReporter console = detailed ? (Reporter.IReporter)new Reporter.DetailedConsoleReporter() : (Reporter.IReporter)new Reporter.ConsoleReporter();
+            Reporter.IReporter console;
+            if (summary)
+            {
+                console = new Reporter.SummaryConsoleReporter();
+            }
+            else if (detailed)
+            {
+                console = new Reporter.DetailedConsoleReporter();
+            }
+            else
+            {
+                console = new Reporter.ConsoleReporter();
+            }
 
             html.Create(results);
             console.Create(results);
