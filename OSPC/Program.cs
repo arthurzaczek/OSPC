@@ -16,6 +16,10 @@ namespace OSPC
             var dirs = new List<string>();
             bool detailed = false;
 
+            Console.WriteLine("Open Software Plagiarism Checker");
+            Console.WriteLine("================================");
+            Console.WriteLine();
+
             var p = new OptionSet()
             {
                 { "h|?|help", v => ShowHelp () },
@@ -52,6 +56,8 @@ namespace OSPC
             {
                 for (int b = a + 1; b < files.Length; b++)
                 {
+                    if (Path.GetExtension(files[a]) != Path.GetExtension(files[b])) continue;
+
                     var s1 = new Submission(files[a], tokenizer);
                     s1.Parse();
 
