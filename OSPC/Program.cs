@@ -14,8 +14,8 @@ namespace OSPC
         {
             var filter = new List<string>();
             var dirs = new List<string>();
-            bool detailed = false;
-            bool summary = false;
+            Reporter.IReporter html = null;
+            Reporter.IReporter console = new Reporter.ConsoleReporter();
 
             Console.WriteLine("Open Software Plagiarism Checker");
             Console.WriteLine("================================");
@@ -26,8 +26,9 @@ namespace OSPC
                 { "h|?|help", v => ShowHelp () },
                 { "f=", v => filter.Add(v) },
                 { "d=", v => dirs.Add(v) },
-                { "detailed", v => detailed = true },
-                { "summary", v => summary = true },
+                { "detailed", v => console = new Reporter.DetailedConsoleReporter() },
+                { "summary", v => console = new Reporter.SummaryConsoleReporter() },
+                { "html:", v => html = new Reporter.HtmlReporter(v) },
             };
 
             var extra = p.Parse(args);
@@ -79,22 +80,10 @@ namespace OSPC
                 .OrderByDescending(r => Math.Max(r.MatchA, r.MatchB))
                 .ToList();
 
-            Reporter.IReporter html = new Reporter.HtmlReporter();
-            Reporter.IReporter console;
-            if (summary)
+            if (html != null)
             {
-                console = new Reporter.SummaryConsoleReporter();
+                html.Create(results);
             }
-            else if (detailed)
-            {
-                console = new Reporter.DetailedConsoleReporter();
-            }
-            else
-            {
-                console = new Reporter.ConsoleReporter();
-            }
-
-            html.Create(results);
             console.Create(results);
         }
 
