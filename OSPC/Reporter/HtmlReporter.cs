@@ -76,7 +76,6 @@ namespace OSPC.Reporter
         {
             var content = rd.ReadToEnd();
             int idx = 0;
-            int colorIdx = 0;
             var currentMatch = result.Matches.OrderBy(m => tokenExtractor(m).First.Value.Start).ToList().GetEnumerator();
             currentMatch.MoveNext();
             while (idx < content.Length)
@@ -92,8 +91,7 @@ namespace OSPC.Reporter
                 {
                     int end = tokenExtractor(currentMatch.Current).Last.Value.End;
                     // in match
-                    diffHtml.Write("<span style=\"font-weight: bold;color: {0}\">", Colors[colorIdx]);
-                    colorIdx = ++colorIdx % Colors.Length;
+                    diffHtml.Write("<span style=\"font-weight: bold;color: {0}\">", Colors[currentMatch.Current.Index % Colors.Length]);
 
                     diffHtml.Write(System.Web.HttpUtility.HtmlEncode(content.Substring(idx, end - idx + 1)));
                     diffHtml.Write("</span>");

@@ -14,13 +14,15 @@ namespace OSPC
             this.TokensA = new LinkedList<Token>();
             this.TokensB = new LinkedList<Token>();
         }
+
         public CompareResult Result { get; private set; }
         public LinkedList<Token> TokensA { get; private set; }
         public LinkedList<Token> TokensB { get; private set; }
+        public int Index { get; set; }
 
         public override string ToString()
         {
-            return string.Join(" ", TokensA.Select(t => t.Text));
+            return string.Format("# {0}: {1}", Index, string.Join(" ", TokensA.Select(t => t.Text)));
         }
     }
 
@@ -30,12 +32,12 @@ namespace OSPC
         {
             this.A = a;
             this.B = b;
-            Matches = new LinkedList<Match>();
+            Matches = new List<Match>();
         }
         public Submission A { get; set; }
         public Submission B { get; set; }
 
-        public LinkedList<Match> Matches { get; private set; }
+        public List<Match> Matches { get; private set; }
 
         public void Seal()
         {
@@ -59,7 +61,7 @@ namespace OSPC
         public CompareResult Compare(Submission a, Submission b)
         {
             CompareResult result = new CompareResult(a, b);
-            var matches = new LinkedList<Match>();
+            var matches = new List<Match>();
             // reduce access to properties
             var a_length = a.Tokens.Length;
             var b_length = b.Tokens.Length;
@@ -118,7 +120,8 @@ namespace OSPC
                 if (!result.Matches.Any(m => m.TokensA.Any(t => match.TokensA.Contains(t))
                                           || m.TokensB.Any(t => match.TokensB.Contains(t))))
                 {
-                    result.Matches.AddLast(match);
+                    match.Index = result.Matches.Count;
+                    result.Matches.Add(match);
                 }
             }
             result.Seal();
@@ -136,7 +139,7 @@ namespace OSPC
             return currentMatch;
         }
 
-        private static Match FinishMatch(Match currentMatch, LinkedList<Match> matches)
+        private static Match FinishMatch(Match currentMatch, List<Match> matches)
         {
             if (currentMatch == null) return null;
 
@@ -149,7 +152,7 @@ namespace OSPC
 
             if (allMatches >= MIN_MATCH_LENGTH && p >= MIN_COMMON_TOKEN)
             {
-                matches.AddLast(currentMatch);
+                matches.Add(currentMatch);
             }
             return null;
         }
