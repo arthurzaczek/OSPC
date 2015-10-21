@@ -60,8 +60,11 @@ namespace OSPC
         {
             CompareResult result = new CompareResult(a, b);
             var matches = new LinkedList<Match>();
+            // reduce access to properties
             var a_length = a.Tokens.Length;
             var b_length = b.Tokens.Length;
+            var a_tokens = a.Tokens;
+            var b_tokens = b.Tokens;
 
             for (int idx_a = 0; idx_a < a_length; idx_a++)
             {
@@ -71,8 +74,8 @@ namespace OSPC
 
                 for (int idx_working_b = 0; idx_working_b < b_length; idx_working_b++)
                 {
-                    var working_a = a.Tokens[idx_working_a];
-                    var working_b = b.Tokens[idx_working_b];
+                    var working_a = a_tokens[idx_working_a];
+                    var working_b = b_tokens[idx_working_b];
 
                     // reduce access to properties
                     var a_text = working_a.Text;
