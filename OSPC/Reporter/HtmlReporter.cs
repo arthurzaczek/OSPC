@@ -14,17 +14,29 @@ namespace OSPC.Reporter
             "#AA0000", "#00AA00", "#0000AA", "#00AAAA", "#AA00AA", "#AAAA00",
             "#880000", "#008800", "#000088", "#008888", "#880088", "#888800",
         };
+        private string _outPath;
+
+        public HtmlReporter(string outPath = null)
+        {
+            this._outPath = outPath.IfNullOrWhiteSpace(Path.Combine(".", "report"));
+        }
+
         public void Create(List<CompareResult> results)
         {
-            using (var html = new StreamWriter("report.html"))
+            if(!Directory.Exists(_outPath))
+            {
+                Directory.CreateDirectory(_outPath);
+            }
+
+            using (var html = new StreamWriter(Path.Combine(_outPath, "index.html")))
             {
                 WriteHeader(html);
 
                 foreach (var result in results)
                 {
                     var diffName = string.Format("{0}_{1}.html", Path.GetFileNameWithoutExtension(result.A.FilePath), Path.GetFileNameWithoutExtension(result.B.FilePath)).Replace(" ", "_");
-                    WriteResultLine(html, result, diffName);
 
+                    WriteResultLine(html, result, diffName);
                     WriteDiff(result, diffName);
                 }
                 html.WriteLine("</table>");
@@ -33,9 +45,9 @@ namespace OSPC.Reporter
             }
         }
 
-        private static void WriteDiff(CompareResult result, string diffName)
+        private void WriteDiff(CompareResult result, string diffName)
         {
-            using (var diffHtml = new StreamWriter(diffName))
+            using (var diffHtml = new StreamWriter(Path.Combine(_outPath, diffName)))
             {
                 diffHtml.WriteLine("<html><head><meta charset=\"UTF-8\"><title>{0}</title></head><body>", diffName);
 
@@ -60,7 +72,7 @@ namespace OSPC.Reporter
             }
         }
 
-        private static void ColorDiff(StreamWriter diffHtml, CompareResult result, StreamReader rd, Func<Match, LinkedList<Token>> tokenExtractor)
+        private void ColorDiff(StreamWriter diffHtml, CompareResult result, StreamReader rd, Func<Match, LinkedList<Token>> tokenExtractor)
         {
             var content = rd.ReadToEnd();
             int idx = 0;
@@ -91,7 +103,7 @@ namespace OSPC.Reporter
             }
         }
 
-        private static void WriteResultLine(StreamWriter html, CompareResult result, string diffName)
+        private void WriteResultLine(StreamWriter html, CompareResult result, string diffName)
         {
             html.WriteLine(@"<tr>
     <td><a href=""{6}"">{0}</a></td>
