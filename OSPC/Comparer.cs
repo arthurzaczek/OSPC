@@ -55,7 +55,7 @@ namespace OSPC
 
     public class Comparer
     {
-        public static readonly int MIN_MATCH_LENGTH = 5;
+        public static readonly int MIN_MATCH_LENGTH = 10;
         public static readonly int MAX_MATCH_GAP = 2; // 1 is exact match
         public static readonly double MIN_COMMON_TOKEN = 0.85; // 1 is every token must match
         public CompareResult Compare(Submission a, Submission b)
