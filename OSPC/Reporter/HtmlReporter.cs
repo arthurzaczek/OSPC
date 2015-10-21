@@ -105,11 +105,11 @@ namespace OSPC.Reporter
         {
             html.WriteLine(@"<tr>
     <td><a href=""{6}"">{0}</a></td>
-    <td>{1:n2}</td>
+    <td class=""right"">{1:n2}</td>
     <td><a href=""{7}"">{2}</a></td>
-    <td>{3:n2}</td>
-    <td>{4}</td>
-    <td>{5}</td>
+    <td class=""right"">{3:n2}</td>
+    <td class=""right"">{4}</td>
+    <td class=""right"">{5}</td>
     <td><a href=""{8}"">Diff</a></td>
 </tr>",
                                         result.A.FilePath.MaxLength(17, "...", true),
@@ -125,7 +125,29 @@ namespace OSPC.Reporter
 
         private static void WriteHeader(StreamWriter html)
         {
-            html.WriteLine("<html><head><meta charset=\"UTF-8\"><title>OSPC</title></head><body>");
+            html.WriteLine(@"<html>
+<head>
+    <meta charset=""UTF-8"">
+    <title>OSPC</title>
+    <style>
+        table {
+            border-collapse: collapse;
+        }    
+        table, th, td {
+            border: 1px solid #CCCCCC;
+            border-collapse: collapse;
+        }    
+        td {
+            padding: 5px;
+        }
+        .right {
+            text-align: right;
+        }
+    </style>
+</head>
+<body>");
+            html.WriteLine("<h1>Open Software Plagiarism Checker</h1>");
+            html.WriteLine("<p>Created on: {0}</p>", DateTime.Now);
             html.WriteLine("<table>");
             html.WriteLine(@"<tr>
     <th>A</th>
