@@ -73,7 +73,9 @@ namespace OSPC
             }
 
             Console.WriteLine();
+
             Console.WriteLine();
+            Console.WriteLine("Creating reports");
 
             results = results
                 .Where(r => r.MatchCount > 0)
