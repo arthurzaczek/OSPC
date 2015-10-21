@@ -7,3 +7,4 @@ TestResults
 
 *.csproj.user
 *.suo
+/packages
