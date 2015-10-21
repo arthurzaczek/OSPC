@@ -18,7 +18,7 @@ namespace OSPC
 
         public string FilePath { get; private set; }
 
-        public LinkedList<Token> Tokens { get; private set; }
+        public Token[] Tokens { get; private set; }
 
         public void Parse()
         {

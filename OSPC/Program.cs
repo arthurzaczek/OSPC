@@ -69,7 +69,7 @@ namespace OSPC
 
                     results.Add(comparer.Compare(s1, s2));
                 }
-                if (++progressCounter % 10 == 0) Console.Write(".");
+                if (++progressCounter % 1 == 0) Console.Write(".");
             }
 
             Console.WriteLine();

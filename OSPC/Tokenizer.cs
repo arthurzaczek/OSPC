@@ -44,11 +44,11 @@ namespace OSPC
     {
         public static readonly char[] SEPERATORS = new char[] { ' ', '\n', '\r', '\t' };
         public static readonly char[] SYMBOLS = new char[] { ',', ';', '(', ')', '[', ']', '{', '}', '&', '|', '=', '<', '>', '!', '~', '+', '-', '/', '*' };
-        public LinkedList<Token> Split(TextReader rd)
+        public Token[] Split(TextReader rd)
         {
             int read;
             Token current = null;
-            var result = new LinkedList<Token>();
+            var result = new List<Token>();
 
             bool inQuote = false;
             int pos = 0;
@@ -61,7 +61,7 @@ namespace OSPC
                     if (current != null)
                     {
                         current.Seal();
-                        result.AddLast(current);
+                        result.Add(current);
                     }
 
                     current = null;
@@ -71,13 +71,13 @@ namespace OSPC
                     if (current != null)
                     {
                         current.Seal();
-                        result.AddLast(current);
+                        result.Add(current);
                     }
 
                     current = new Token(pos);
                     current.Append(c);
                     current.Seal();
-                    result.AddLast(current);
+                    result.Add(current);
 
                     current = null;
                 }
@@ -97,7 +97,7 @@ namespace OSPC
                 pos++;
             }
 
-            return result;
+            return result.ToArray();
         }
     }
 }
