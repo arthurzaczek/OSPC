@@ -33,6 +33,7 @@ namespace OSPC.Reporter
                 Directory.CreateDirectory(_outPath);
             }
 
+            int progressCounter = 0;
             using (var html = new StreamWriter(Path.Combine(_outPath, "index.html")))
             {
                 WriteHeader(html);
@@ -43,10 +44,13 @@ namespace OSPC.Reporter
 
                     WriteResultLine(html, result, diffName);
                     WriteDiff(result, diffName);
+
+                    if (++progressCounter % 100 == 0) Console.Write(".");
                 }
                 WriteFooter(html);
                 html.Flush();
             }
+            Console.WriteLine();
 
             CreateTokenGraph(results);
             CreateTokenDetailGraph(results);
@@ -191,6 +195,10 @@ namespace OSPC.Reporter
 
                 diffHtml.WriteLine("<div style=\"float:left;width:50%;font-family: monospace;white-space: pre;\">");
                 diffHtml.WriteLine("<h2>{0}</h2>", Path.GetFileName(result.A.FilePath));
+                diffHtml.WriteLine("<p>Match: {0:n2} %<br/>Token: {1}</p>", 
+                    result.MatchA * 100.0,
+                    result.A.Tokens.Length);
+
                 using (var rd = new StreamReader(result.A.FilePath))
                 {
                     ColorDiff(diffHtml, result, rd, m => m.TokensA);
@@ -199,6 +207,10 @@ namespace OSPC.Reporter
 
                 diffHtml.WriteLine("<div style=\"float:left;width:50%;font-family: monospace;white-space: pre;\">");
                 diffHtml.WriteLine("<h2>{0}</h2>", Path.GetFileName(result.B.FilePath));
+                diffHtml.WriteLine("<p>Match: {0:n2} %<br/>Token: {1}</p>",
+                    result.MatchB * 100.0,
+                    result.B.Tokens.Length);
+
                 using (var rd = new StreamReader(result.B.FilePath))
                 {
                     ColorDiff(diffHtml, result, rd, m => m.TokensB);
