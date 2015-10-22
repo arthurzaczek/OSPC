@@ -69,10 +69,11 @@ namespace OSPC
             var watch = new Stopwatch();
             watch.Start();
             int progressCounter = 0;
+            object _lock = new object();
 
-            foreach (var pair in compareList)
+            Parallel.ForEach(compareList, pair =>
             {
-                if (Path.GetExtension(pair.Item1) != Path.GetExtension(pair.Item2)) continue;
+                if (Path.GetExtension(pair.Item1) != Path.GetExtension(pair.Item2)) return;
 
                 var s1 = new Submission(pair.Item1, tokenizer);
                 s1.Parse();
@@ -80,10 +81,14 @@ namespace OSPC
                 var s2 = new Submission(pair.Item2, tokenizer);
                 s2.Parse();
 
-                results.Add(comparer.Compare(s1, s2));
-                if (++progressCounter % 100 == 0) Console.Write(".");
-            }
+                var r = comparer.Compare(s1, s2);
 
+                lock (_lock)
+                {
+                    results.Add(r);
+                    if (++progressCounter % 100 == 0) Console.Write(".");
+                }
+            });
 
             Console.WriteLine();
 
