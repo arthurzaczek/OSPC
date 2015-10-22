@@ -61,6 +61,7 @@ namespace OSPC.Reporter
             g.XAxis.IsVisible = false;
 
             var lst = results.Select(i => (double)i.TokenCount).OrderBy(i => i).ToArray();
+            var derv_2 = lst.CalcDerv2();
 
             var c = g.AddCurve("",
                 Enumerable.Range(1, results.Count).Select(i => (double)i).ToArray(),
@@ -71,7 +72,18 @@ namespace OSPC.Reporter
             c.Label.IsVisible = false;
             c.Symbol.IsVisible = false;
 
-            AddLine(g, lst.Average());
+            //c = g.AddCurve("Derivation 2",
+            //    Enumerable.Range(1, results.Count - 2).Select(i => (double)i).ToArray(),
+            //    derv_2.ToArray(),
+            //    Color.Green,
+            //    SymbolType.Circle);
+            //c.IsY2Axis = true;
+            //c.Line.IsVisible = true;
+            //c.Label.IsVisible = false;
+            //c.Symbol.IsVisible = false;
+
+            AddLine(g, lst.Average(), Color.Blue);
+            AddLine(g, lst[derv_2.MaxIndex()], Color.Green);
 
             g.AxisChange();
             using (var img = g.GetImage())
@@ -90,6 +102,7 @@ namespace OSPC.Reporter
             int count = (int)((double)results.Count * 0.1);
 
             var lst = results.Select(i => (double)i.TokenCount).OrderByDescending(i => i).Take(count).OrderBy(i => i).ToArray();
+            var derv_2 = lst.CalcDerv2();
 
             var c = g.AddCurve("",
                 Enumerable.Range(1, count).Select(i => (double)i).ToArray(),
@@ -100,7 +113,18 @@ namespace OSPC.Reporter
             c.Label.IsVisible = false;
             c.Symbol.IsVisible = false;
 
-            AddLine(g, lst.Average());
+            //c = g.AddCurve("Derivation 2",
+            //    Enumerable.Range(1, results.Count - 2).Select(i => (double)i).ToArray(),
+            //    derv_2.ToArray(),
+            //    Color.Green,
+            //    SymbolType.Circle);
+            //c.IsY2Axis = true;
+            //c.Line.IsVisible = true;
+            //c.Label.IsVisible = false;
+            //c.Symbol.IsVisible = false;
+
+            AddLine(g, lst.Average(), Color.Blue);
+            AddLine(g, lst[derv_2.MaxIndex()], Color.Green);
 
             g.AxisChange();
             using (var img = g.GetImage())
@@ -126,7 +150,7 @@ namespace OSPC.Reporter
             c.Label.IsVisible = false;
             c.Symbol.IsVisible = false;
 
-            AddLine(g, lst.Average());
+            AddLine(g, lst.Average(), Color.Blue);
 
             g.AxisChange();
             using (var img = g.GetImage(512, 256, 72.0f))
@@ -135,12 +159,12 @@ namespace OSPC.Reporter
             }
         }
 
-        private static void AddLine(GraphPane g, double avg)
+        private static void AddLine(GraphPane g, double avg, Color color)
         {
             var line = new LineObj(0, avg, 1, avg);
             line.IsClippedToChartRect = true;
             line.Location.CoordinateFrame = CoordType.XChartFractionYScale;
-            line.Line.Color = Color.Blue;
+            line.Line.Color = color;
             line.Line.Style = System.Drawing.Drawing2D.DashStyle.Dash;
             g.GraphObjList.Add(line);
         }
@@ -225,7 +249,8 @@ namespace OSPC.Reporter
     <td class=""right"">{3:n2}</td>
     <td class=""right"">{4}</td>
     <td class=""right"">{5}</td>
-    <td><a href=""{8}"">Diff</a></td>
+    <td class=""right"">{8:n2}</td>
+    <td><a href=""{9}"">Diff</a></td>
 </tr>",
                                         result.A.FilePath.MaxLength(17, "...", true),
                                         100.0 * result.MatchA,
@@ -235,6 +260,7 @@ namespace OSPC.Reporter
                                         result.TokenCount,
                                         result.A.FilePath,
                                         result.B.FilePath,
+                                        (double)result.TokenCount / (double)result.MatchCount,
                                         diffName);
         }
 
@@ -271,6 +297,7 @@ namespace OSPC.Reporter
     <th>% B</th>
     <th>Matches</th>
     <th>Tokens</th>
+    <th>Tokens/Match</th>
     <th>Diff</th>
 </tr>");
         }
