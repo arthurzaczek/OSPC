@@ -50,27 +50,37 @@ namespace OSPC
                 .Concat(extra)
                 .ToArray();
 
-            var results = new List<CompareResult>();
-
-            Console.Write("Comparing {0} files ", files.Length);
-            int progressCounter = 0;
-
+            var compareList = new List<Tuple<string, string>>();
             for (int a = 0; a < files.Length; a++)
             {
                 for (int b = a + 1; b < files.Length; b++)
                 {
                     if (Path.GetExtension(files[a]) != Path.GetExtension(files[b])) continue;
 
-                    var s1 = new Submission(files[a], tokenizer);
-                    s1.Parse();
-
-                    var s2 = new Submission(files[b], tokenizer);
-                    s2.Parse();
-
-                    results.Add(comparer.Compare(s1, s2));
+                    compareList.Add(new Tuple<string, string>(files[a], files[b]));
                 }
-                if (++progressCounter % 1 == 0) Console.Write(".");
             }
+
+            var results = new List<CompareResult>();
+
+            Console.Write("Comparing {0} files ", files.Length);
+            int progressCounter = 0;
+
+
+            foreach (var pair in compareList)
+            {
+                if (Path.GetExtension(pair.Item1) != Path.GetExtension(pair.Item2)) continue;
+
+                var s1 = new Submission(pair.Item1, tokenizer);
+                s1.Parse();
+
+                var s2 = new Submission(pair.Item2, tokenizer);
+                s2.Parse();
+
+                results.Add(comparer.Compare(s1, s2));
+                if (++progressCounter % 100 == 0) Console.Write(".");
+            }
+
 
             Console.WriteLine();
 
