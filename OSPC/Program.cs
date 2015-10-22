@@ -1,6 +1,7 @@
 ﻿using NDesk.Options;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -64,8 +65,10 @@ namespace OSPC
             var results = new List<CompareResult>();
 
             Console.Write("Comparing {0} files ", files.Length);
-            int progressCounter = 0;
 
+            var watch = new Stopwatch();
+            watch.Start();
+            int progressCounter = 0;
 
             foreach (var pair in compareList)
             {
@@ -84,7 +87,7 @@ namespace OSPC
 
             Console.WriteLine();
 
-            Console.WriteLine();
+            Console.WriteLine("... finished in {0:n2} sec.", watch.Elapsed.TotalSeconds);
             Console.WriteLine("Creating reports");
 
             results = results
@@ -97,6 +100,8 @@ namespace OSPC
                 html.Create(results);
             }
             console.Create(results);
+
+            Console.WriteLine("... finished in total {0:n2} sec.", watch.Elapsed.TotalSeconds);
         }
 
         private static void ShowHelp()
