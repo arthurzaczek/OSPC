@@ -55,8 +55,7 @@ namespace OSPC.Reporter
 
         private void CreateTokenGraph(List<CompareResult> results)
         {
-
-            GraphPane g = new GraphPane(GraphRect, "Verteilung der Token", "-", "Anz. Token");
+            GraphPane g = new GraphPane(GraphRect, "Distribution of common token", "-", "# of token");
             SetupGraph(g);
             g.XAxis.IsVisible = false;
 
@@ -95,7 +94,7 @@ namespace OSPC.Reporter
         private void CreateTokenDetailGraph(List<CompareResult> results)
         {
 
-            GraphPane g = new GraphPane(GraphRect, "Verteilung der Token - Top 10%", "-", "Anz. Token");
+            GraphPane g = new GraphPane(GraphRect, "Distribution of common token - top 10%", "-", "# of Token");
             SetupGraph(g);
             g.XAxis.IsVisible = false;
 
@@ -135,7 +134,7 @@ namespace OSPC.Reporter
 
         private void CreatePercentGraph(List<CompareResult> results)
         {
-            GraphPane g = new GraphPane(GraphRect, "Verteilung % Anteil", "-", "Anz. Token");
+            GraphPane g = new GraphPane(GraphRect, "Distribution of % common", "-", "% common");
             SetupGraph(g);
             g.XAxis.IsVisible = false;
 
