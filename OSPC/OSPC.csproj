@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Comparer.cs" />
+    <Compile Include="Configuration.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="Program.cs" />

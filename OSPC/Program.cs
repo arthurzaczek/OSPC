@@ -15,6 +15,7 @@ namespace OSPC
         {
             var filter = new List<string>();
             var dirs = new List<string>();
+            var cfg = new Configuration();
             Reporter.IReporter html = null;
             Reporter.IReporter console = new Reporter.ConsoleReporter();
 
@@ -25,11 +26,17 @@ namespace OSPC
             var p = new OptionSet()
             {
                 { "h|?|help", v => ShowHelp () },
+
                 { "f=", v => filter.Add(v) },
                 { "d=", v => dirs.Add(v) },
+
                 { "detailed", v => console = new Reporter.DetailedConsoleReporter() },
                 { "summary", v => console = new Reporter.SummaryConsoleReporter() },
                 { "html:", v => html = new Reporter.HtmlReporter(v) },
+
+                { "min-match-length=", v => cfg.MIN_MATCH_LENGTH = int.Parse(v) },
+                { "max-match-distance=", v => cfg.MAX_MATCH_DISTANCE = int.Parse(v) },
+                { "min-common-token=", v =>  cfg.MIN_COMMON_TOKEN = double.Parse(v) },
             };
 
             var extra = p.Parse(args);
@@ -43,7 +50,7 @@ namespace OSPC
             }
 
             var tokenizer = new Tokenizer();
-            var comparer = new Comparer();
+            var comparer = new Comparer(cfg);
 
             var files = dirs
                 .SelectMany(d => filter.Select(f => new Tuple<string, string>(d, f)))

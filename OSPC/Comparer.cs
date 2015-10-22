@@ -55,9 +55,13 @@ namespace OSPC
 
     public class Comparer
     {
-        public static readonly int MIN_MATCH_LENGTH = 10;
-        public static readonly int MAX_MATCH_GAP = 2; // 1 is exact match
-        public static readonly double MIN_COMMON_TOKEN = 0.85; // 1 is every token must match
+        private readonly Configuration _cfg;
+
+        public Comparer(Configuration cfg)
+        {
+            this._cfg = cfg;
+        }
+
         public CompareResult Compare(Submission a, Submission b)
         {
             CompareResult result = new CompareResult(a, b);
@@ -94,7 +98,7 @@ namespace OSPC
                     }
                     else if (inMatch > 0 && a_text != b_text)
                     {
-                        if (inMatch >= MAX_MATCH_GAP)
+                        if (inMatch >= _cfg.MAX_MATCH_DISTANCE)
                         {
                             FinishMatch(currentMatch, matches);
                             currentMatch = null;
@@ -128,7 +132,7 @@ namespace OSPC
             return result;
         }
 
-        private static Match ProcessMatch(Token working_a, Token working_b, Match currentMatch, CompareResult result)
+        private Match ProcessMatch(Token working_a, Token working_b, Match currentMatch, CompareResult result)
         {
             if (currentMatch == null)
             {
@@ -139,7 +143,7 @@ namespace OSPC
             return currentMatch;
         }
 
-        private static Match FinishMatch(Match currentMatch, List<Match> matches)
+        private Match FinishMatch(Match currentMatch, List<Match> matches)
         {
             if (currentMatch == null) return null;
 
@@ -150,7 +154,7 @@ namespace OSPC
             var realMatches = a_text.Intersect(b_text).Count();
             var p = (double)realMatches / (double)allMatches;
 
-            if (allMatches >= MIN_MATCH_LENGTH && p >= MIN_COMMON_TOKEN)
+            if (allMatches >= _cfg.MIN_MATCH_LENGTH && p >= _cfg.MIN_COMMON_TOKEN)
             {
                 matches.Add(currentMatch);
             }
