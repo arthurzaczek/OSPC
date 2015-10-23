@@ -59,6 +59,7 @@ namespace OSPC.Reporter.Html
             CreateTokenGraph(results);
             CreateTokenDetailGraph(results);
             CreatePercentGraph(results);
+            CreateTokenMatchGraph(results);
 
             WriteStylesheet();
         }
@@ -163,6 +164,38 @@ namespace OSPC.Reporter.Html
             using (var img = g.GetImage(512, 256, 72.0f))
             {
                 img.Save(Path.Combine(_outPath, "PercentGraph.png"), ImageFormat.Png);
+            }
+        }
+        private void CreateTokenMatchGraph(List<CompareResult> results)
+        {
+            GraphPane g = new GraphPane(GraphRect, "Distribution of token / match", "-", "Token / match");
+            SetupGraph(g);
+
+            var lst = results.Select(i => (double)i.TokenCount / (double)i.MatchCount).OrderBy(i => i).ToArray();
+            var derv_2 = lst.CalcDerv2();
+
+            var c = g.AddCurve("Token / match",
+                Enumerable.Range(1, results.Count).Select(i => (double)i).ToArray(),
+                lst,
+                Color.Red);
+            c.Symbol.IsVisible = false;
+
+#if SHOW_DERIVATION_2
+            c = g.AddCurve("Derivation 2",
+                Enumerable.Range(1, derv_2.Length).Select(i => (double)i).ToArray(),
+                derv_2.ToArray(),
+                Color.Green);
+            c.IsY2Axis = true;
+            c.Symbol.IsVisible = false;
+#endif
+
+            AddLine(g, lst.Average(), Color.Blue, "Avg");
+            AddLine(g, lst[derv_2.MaxIndex()], Color.Green, "POI");
+
+            g.AxisChange();
+            using (var img = g.GetImage())
+            {
+                img.Save(Path.Combine(_outPath, "TokenMatchGraph.png"), ImageFormat.Png);
             }
         }
 
@@ -340,6 +373,8 @@ namespace OSPC.Reporter.Html
             html.WriteLine("<img src=\"TokenGraph.png\" />");
             html.WriteLine("<br/>");
             html.WriteLine("<img src=\"TokenDetailGraph.png\" />");
+            html.WriteLine("<br/>");
+            html.WriteLine("<img src=\"TokenMatchGraph.png\" />");
             html.WriteLine("<br/>");
             html.WriteLine("<img src=\"PercentGraph.png\" />");
             html.WriteLine("</div>");
