@@ -1,4 +1,6 @@
-﻿using System;
+﻿// #define SHOW_DERIVATION_2
+
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -66,32 +68,27 @@ namespace OSPC.Reporter.Html
         {
             GraphPane g = new GraphPane(GraphRect, "Distribution of common token", "-", "# of token");
             SetupGraph(g);
-            g.XAxis.IsVisible = false;
 
             var lst = results.Select(i => (double)i.TokenCount).OrderBy(i => i).ToArray();
             var derv_2 = lst.CalcDerv2();
 
-            var c = g.AddCurve("",
+            var c = g.AddCurve("Common token",
                 Enumerable.Range(1, results.Count).Select(i => (double)i).ToArray(),
                 lst,
-                Color.Red,
-                SymbolType.Circle);
-            c.Line.IsVisible = true;
-            c.Label.IsVisible = false;
+                Color.Red);
             c.Symbol.IsVisible = false;
 
-            //c = g.AddCurve("Derivation 2",
-            //    Enumerable.Range(1, results.Count - 2).Select(i => (double)i).ToArray(),
-            //    derv_2.ToArray(),
-            //    Color.Green,
-            //    SymbolType.Circle);
-            //c.IsY2Axis = true;
-            //c.Line.IsVisible = true;
-            //c.Label.IsVisible = false;
-            //c.Symbol.IsVisible = false;
+#if SHOW_DERIVATION_2
+            c = g.AddCurve("Derivation 2",
+                Enumerable.Range(1, derv_2.Length).Select(i => (double)i).ToArray(),
+                derv_2.ToArray(),
+                Color.Green);
+            c.IsY2Axis = true;
+            c.Symbol.IsVisible = false;
+#endif
 
-            AddLine(g, lst.Average(), Color.Blue);
-            AddLine(g, lst[derv_2.MaxIndex()], Color.Green);
+            AddLine(g, lst.Average(), Color.Blue, "Avg");
+            AddLine(g, lst[derv_2.MaxIndex()], Color.Green, "POI");
 
             g.AxisChange();
             using (var img = g.GetImage())
@@ -105,34 +102,29 @@ namespace OSPC.Reporter.Html
 
             GraphPane g = new GraphPane(GraphRect, "Distribution of common token - top 10%", "-", "# of Token");
             SetupGraph(g);
-            g.XAxis.IsVisible = false;
 
             int count = (int)((double)results.Count * 0.1);
 
             var lst = results.Select(i => (double)i.TokenCount).OrderByDescending(i => i).Take(count).OrderBy(i => i).ToArray();
             var derv_2 = lst.CalcDerv2();
 
-            var c = g.AddCurve("",
+            var c = g.AddCurve("Common token",
                 Enumerable.Range(1, count).Select(i => (double)i).ToArray(),
                 lst,
-                Color.Red,
-                SymbolType.Circle);
-            c.Line.IsVisible = true;
-            c.Label.IsVisible = false;
+                Color.Red);
             c.Symbol.IsVisible = false;
 
-            //c = g.AddCurve("Derivation 2",
-            //    Enumerable.Range(1, results.Count - 2).Select(i => (double)i).ToArray(),
-            //    derv_2.ToArray(),
-            //    Color.Green,
-            //    SymbolType.Circle);
-            //c.IsY2Axis = true;
-            //c.Line.IsVisible = true;
-            //c.Label.IsVisible = false;
-            //c.Symbol.IsVisible = false;
+#if SHOW_DERIVATION_2
+            c = g.AddCurve("Derivation 2",
+                Enumerable.Range(1, derv_2.Length).Select(i => (double)i).ToArray(),
+                derv_2.ToArray(),
+                Color.Green);
+            c.IsY2Axis = true;
+            c.Symbol.IsVisible = false;
+#endif
 
-            AddLine(g, lst.Average(), Color.Blue);
-            AddLine(g, lst[derv_2.MaxIndex()], Color.Green);
+            AddLine(g, lst.Average(), Color.Blue, "Avg");
+            AddLine(g, lst[derv_2.MaxIndex()], Color.Green, "POI");
 
             g.AxisChange();
             using (var img = g.GetImage())
@@ -143,22 +135,29 @@ namespace OSPC.Reporter.Html
 
         private void CreatePercentGraph(List<CompareResult> results)
         {
-            GraphPane g = new GraphPane(GraphRect, "Distribution of % common", "-", "% common");
+            GraphPane g = new GraphPane(GraphRect, "Distribution of % similarity", "-", "% similarity");
             SetupGraph(g);
-            g.XAxis.IsVisible = false;
 
             var lst = results.SelectMany(i => new[] { 100.0 * i.MatchA, 100.0 * i.MatchB }).OrderBy(i => i).ToArray();
+            var derv_2 = lst.CalcDerv2();
 
-            var c = g.AddCurve("",
+            var c = g.AddCurve("Similarity",
                 Enumerable.Range(1, results.Count * 2).Select(i => (double)i).ToArray(),
                 lst,
-                Color.Red,
-                SymbolType.Circle);
-            c.Line.IsVisible = true;
-            c.Label.IsVisible = false;
+                Color.Red);
             c.Symbol.IsVisible = false;
 
-            AddLine(g, lst.Average(), Color.Blue);
+#if SHOW_DERIVATION_2
+            c = g.AddCurve("Derivation 2",
+                Enumerable.Range(1, derv_2.Length).Select(i => (double)i).ToArray(),
+                derv_2.ToArray(),
+                Color.Green);
+            c.IsY2Axis = true;
+            c.Symbol.IsVisible = false;
+#endif
+
+            AddLine(g, lst.Average(), Color.Blue, "Avg");
+            AddLine(g, lst[derv_2.MaxIndex()], Color.Green, "POI");
 
             g.AxisChange();
             using (var img = g.GetImage(512, 256, 72.0f))
@@ -167,33 +166,59 @@ namespace OSPC.Reporter.Html
             }
         }
 
-        private static void AddLine(GraphPane g, double avg, Color color)
+        private static void AddLine(GraphPane g, double val, Color color, string label = null)
         {
-            var line = new LineObj(0, avg, 1, avg);
+            var line = new LineObj(0, val, 1, val);
             line.IsClippedToChartRect = true;
             line.Location.CoordinateFrame = CoordType.XChartFractionYScale;
             line.Line.Color = color;
             line.Line.Style = System.Drawing.Drawing2D.DashStyle.Dash;
             g.GraphObjList.Add(line);
+
+            if (!string.IsNullOrWhiteSpace(label))
+            {
+                var text = new TextObj(label, 0.01, val);
+                text.IsClippedToChartRect = true;
+                text.Location.CoordinateFrame = CoordType.XChartFractionYScale;
+                text.Location.AlignH = AlignH.Left;
+                text.Location.AlignV = AlignV.Bottom;
+                text.FontSpec.FontColor = color;
+                text.FontSpec.Fill.IsVisible = false;
+                text.FontSpec.Size = 18.0f;
+                text.FontSpec.Border.IsVisible = false;
+                g.GraphObjList.Add(text);
+            }
         }
 
         private static void SetupGraph(ZedGraph.GraphPane g)
         {
+            var color = Color.FromArgb(0xCC, 0xCC, 0xCC);
+
+#if SHOW_DERIVATION_2
             g.Legend.IsVisible = true;
+#else
+            g.Legend.IsVisible = false;
+#endif
+            g.XAxis.IsVisible = false;
+            g.Legend.Border.IsVisible = false;
+
+            g.Border.Color = color;
+            g.Chart.Border.Color = color;
 
             g.XAxis.MajorGrid.IsVisible = true;
             g.YAxis.MajorGrid.IsVisible = true;
             g.YAxis.MinorGrid.IsVisible = true;
 
             g.Title.FontSpec.Size = 18.0f;
+            g.Legend.FontSpec.Size = 18.0f;
             g.XAxis.Scale.FontSpec.Size = 18.0f;
             g.YAxis.Scale.FontSpec.Size = 18.0f;
             g.XAxis.Title.FontSpec.Size = 18.0f;
             g.YAxis.Title.FontSpec.Size = 18.0f;
         }
-        #endregion
+#endregion
 
-        #region Details
+#region Details
         private void WriteDetail(CompareResult result, string diffName)
         {
             using (var html = new StreamWriter(Path.Combine(_outPath, diffName)))
@@ -266,9 +291,9 @@ namespace OSPC.Reporter.Html
                 }
             }
         }
-        #endregion
+#endregion
 
-        #region Summay
+#region Summay
         private static void WriteSummaryTitle(StreamWriter html)
         {
             html.WriteLine("<h1>Open Software Plagiarism Checker</h1>");
@@ -319,9 +344,9 @@ namespace OSPC.Reporter.Html
             html.WriteLine("<img src=\"PercentGraph.png\" />");
             html.WriteLine("</div>");
         }
-        #endregion
+#endregion
 
-        #region Commmon
+#region Commmon
         private static void WriteHeader(StreamWriter html, string title)
         {
             html.WriteLine(@"<html>
@@ -345,6 +370,6 @@ namespace OSPC.Reporter.Html
         {
             html.WriteLine("</body></html>");
         }
-        #endregion
+#endregion
     }
 }
