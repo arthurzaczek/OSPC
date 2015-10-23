@@ -43,14 +43,14 @@ namespace OSPC
         {
             MatchCount = Matches.Count;
             TokenCount = Matches.Sum(m => m.TokensA.Count);
-            MatchA = (double)TokenCount / (double)A.Tokens.Length;
-            MatchB = (double)TokenCount / (double)B.Tokens.Length;
+            SimilarityA = (double)TokenCount / (double)A.Tokens.Length;
+            SimilarityB = (double)TokenCount / (double)B.Tokens.Length;
         }
 
         public int MatchCount { get; private set; }
         public int TokenCount { get; private set; }
-        public double MatchA { get; private set; }
-        public double MatchB { get; private set; }
+        public double SimilarityA { get; private set; }
+        public double SimilarityB { get; private set; }
     }
 
     public class Comparer

@@ -16,9 +16,9 @@ namespace OSPC.Reporter
             {
                 Console.WriteLine("{0, -20} {1,8:n2} {2, -20} {3,8:n2} {4, 8} {4, 8}",
                     result.A.FilePath.MaxLength(17, "...", true),
-                    100.0 * result.MatchA,
+                    100.0 * result.SimilarityA,
                     result.B.FilePath.MaxLength(17, "...", true),
-                    100.0 * result.MatchB,
+                    100.0 * result.SimilarityB,
                     result.MatchCount,
                     result.TokenCount);
             }

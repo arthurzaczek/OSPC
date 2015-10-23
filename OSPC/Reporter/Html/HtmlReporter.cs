@@ -145,7 +145,7 @@ namespace OSPC.Reporter.Html
             GraphPane g = new GraphPane(GraphRect, "Distribution of % similarity", "-", "% similarity");
             SetupGraph(g);
 
-            var lst = results.SelectMany(i => new[] { 100.0 * i.MatchA, 100.0 * i.MatchB }).OrderBy(i => i).ToArray();
+            var lst = results.SelectMany(i => new[] { 100.0 * i.SimilarityA, 100.0 * i.SimilarityB }).OrderBy(i => i).ToArray();
             var derv_2 = lst.CalcDerv2();
 
             var c = g.AddCurve("Similarity",
@@ -257,7 +257,7 @@ namespace OSPC.Reporter.Html
         }
 #endregion
 
-#region Details
+        #region Details
         private void WriteDetail(CompareResult result, string diffName)
         {
             using (var html = new StreamWriter(Path.Combine(_outPath, diffName)))
@@ -274,7 +274,7 @@ namespace OSPC.Reporter.Html
                 html.WriteLine("<div class=\"detail-col\">");
                 html.WriteLine("<h2>{0}</h2>", Path.GetFileName(result.A.FilePath));
                 html.WriteLine("<div class=\"detail-submission-summary\">Similarity: {0:n2} %<br/>Token: {1}</div>",
-                    result.MatchA * 100.0,
+                    result.SimilarityA * 100.0,
                     result.A.Tokens.Length);
 
                 html.WriteLine("<div class=\"detail-code\">");
@@ -287,7 +287,7 @@ namespace OSPC.Reporter.Html
                 html.WriteLine("<div class=\"detail-col\">");
                 html.WriteLine("<h2>{0}</h2>", Path.GetFileName(result.B.FilePath));
                 html.WriteLine("<div class=\"detail-submission-summary\">Similarity: {0:n2} %<br/>Token: {1}</div>",
-                    result.MatchB * 100.0,
+                    result.SimilarityB * 100.0,
                     result.B.Tokens.Length);
 
                 html.WriteLine("<div class=\"detail-code\">");
@@ -330,9 +330,9 @@ namespace OSPC.Reporter.Html
                 }
             }
         }
-#endregion
+        #endregion
 
-#region Summay
+        #region Summay
         private static void WriteSummaryTitle(StreamWriter html)
         {
             html.WriteLine("<h1>Open Software Plagiarism Checker</h1>");
@@ -362,9 +362,9 @@ namespace OSPC.Reporter.Html
     <td><a href=""{9}"">Diff</a></td>
 </tr>",
                                         result.A.FilePath.MaxLength(17, "...", true),
-                                        100.0 * result.MatchA,
+                                        100.0 * result.SimilarityA,
                                         result.B.FilePath.MaxLength(17, "...", true),
-                                        100.0 * result.MatchB,
+                                        100.0 * result.SimilarityB,
                                         result.MatchCount,
                                         result.TokenCount,
                                         result.A.FilePath,
@@ -385,7 +385,7 @@ namespace OSPC.Reporter.Html
             html.WriteLine("<img src=\"PercentGraph.png\" />");
             html.WriteLine("</div>");
         }
-#endregion
+        #endregion
 
 #region Commmon
         private static void WriteHeader(StreamWriter html, string title)

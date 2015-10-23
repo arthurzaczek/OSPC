@@ -112,7 +112,7 @@ namespace OSPC
 
             results = results
                 .Where(r => r.MatchCount > 0)
-                .OrderByDescending(r => Math.Max(r.MatchA, r.MatchB))
+                .OrderByDescending(r => Math.Max(r.SimilarityA, r.SimilarityB))
                 .ToList();
 
             if (html != null)

@@ -17,8 +17,8 @@ namespace OSPC.Reporter
                 Console.WriteLine("----------------------------");
                 Console.WriteLine("Matches: {0}", result.MatchCount);
                 Console.WriteLine("Tokens: {0}", result.TokenCount);
-                Console.WriteLine("% A: {0:n2}", 100.0 * result.MatchA);
-                Console.WriteLine("% B: {0:n2}", 100.0 * result.MatchB);
+                Console.WriteLine("% A: {0:n2}", 100.0 * result.SimilarityA);
+                Console.WriteLine("% B: {0:n2}", 100.0 * result.SimilarityB);
                 foreach (var m in result.Matches)
                 {
                     Console.WriteLine("  !: " + m.ToString());
