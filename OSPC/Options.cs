@@ -1012,7 +1012,7 @@ namespace NDesk.Options
             }
             else
             {
-                Write(o, ref written, "      --");
+                Write(o, ref written, "  --");
                 Write(o, ref written, names[0]);
             }
 

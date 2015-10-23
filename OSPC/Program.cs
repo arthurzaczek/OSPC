@@ -16,6 +16,7 @@ namespace OSPC
             var filter = new List<string>();
             var dirs = new List<string>();
             var cfg = new Configuration();
+            bool showHelp = false;
             Reporter.IReporter html = null;
             Reporter.IReporter console = new Reporter.ConsoleReporter();
 
@@ -25,26 +26,33 @@ namespace OSPC
 
             var p = new OptionSet()
             {
-                { "h|?|help", v => ShowHelp () },
+                { "h|?|help", "Prints this help", v => showHelp = true },
 
-                { "f=", v => filter.Add(v) },
-                { "d=", v => dirs.Add(v) },
+                { "f=", "File filter. If -d is specified, then -f defaults to \"*.*.\"", v => filter.Add(v) },
+                { "d=", "Specifies a directory where the filer applies. If -f is specified, then -d defaults to \".\"", v => dirs.Add(v) },
 
-                { "detailed", v => console = new Reporter.DetailedConsoleReporter() },
-                { "summary", v => console = new Reporter.SummaryConsoleReporter() },
-                { "html:", v => html = new Reporter.HtmlReporter(v) },
+                { "detailed", "Print a detailed report to the console", v => console = new Reporter.DetailedConsoleReporter() },
+                { "summary", "Print only a summay to the console. Usefull if --html is used.", v => console = new Reporter.SummaryConsoleReporter() },
+                { "html:", "Saves a html report to the specified directory. Defaults to \"report\"", v => html = new Reporter.HtmlReporter(v) },
 
-                { "min-match-length=", v => cfg.MIN_MATCH_LENGTH = int.Parse(v) },
-                { "max-match-distance=", v => cfg.MAX_MATCH_DISTANCE = int.Parse(v) },
-                { "min-common-token=", v =>  cfg.MIN_COMMON_TOKEN = double.Parse(v) },
+                { "min-match-length=", "Minimum count of matching tokens, including non-matching tokens.", v => cfg.MIN_MATCH_LENGTH = int.Parse(v) },
+                { "max-match-distance=", "Maximum distance between tokens to count as a match. 1 = exact match.", v => cfg.MAX_MATCH_DISTANCE = int.Parse(v) },
+                { "min-common-token=", "Percent of token that must match to count as a match. 1 = every token must match.", v =>  cfg.MIN_COMMON_TOKEN = double.Parse(v) },
             };
 
             var extra = p.Parse(args);
-            if (filter.Count == 0)
+
+            if(showHelp)
+            {
+                ShowHelp(p);
+                return;
+            }
+
+            if (filter.Count == 0 && dirs.Count > 0)
             {
                 filter.Add("*.*");
             }
-            if (dirs.Count == 0)
+            if (dirs.Count == 0 && filter.Count > 0)
             {
                 dirs.Add(".");
             }
@@ -116,9 +124,31 @@ namespace OSPC
             Console.WriteLine("... finished in total {0:n2} sec.", watch.Elapsed.TotalSeconds);
         }
 
-        private static void ShowHelp()
+        private static void ShowHelp(OptionSet p)
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Usage: OSPC [options] { file1 file2 ... }");
+            Console.WriteLine();
+            p.WriteOptionDescriptions(Console.Out);
+            Console.WriteLine(@"  file1 file2                Optional. Files or additional files, if -f or -d 
+                               is not used or not applicalable.");
+            Console.WriteLine();
+            Console.WriteLine("Examples:");
+            Console.WriteLine();
+            Console.WriteLine("  OSPC -d c:\\somedir -f *.c");
+            Console.WriteLine();
+            Console.WriteLine("    Checks all *.c files in somedir.");
+            Console.WriteLine();
+            Console.WriteLine("  OSPC c:\\somedir\\file1.c c:\\somedir\\file2.c");
+            Console.WriteLine();
+            Console.WriteLine("    Checks file1.c and file2.c using absolute paths.");
+            Console.WriteLine();
+            Console.WriteLine("  OSPC a.c b.c");
+            Console.WriteLine();
+            Console.WriteLine("    Checks file1.c and file2.c using relative paths.");
+            Console.WriteLine();
+            Console.WriteLine("  OSPC --summay --html -f *.c");
+            Console.WriteLine();
+            Console.WriteLine("    Checks all c-files in the current directory and output a html report to .\\report\\index.html.");
         }
     }
 }
