@@ -36,20 +36,26 @@ namespace OSPC.Reporter.Html
             }
 
             int progressCounter = 0;
+            object _lock = new object();
             using (var html = new StreamWriter(Path.Combine(_outPath, "index.html")))
             {
                 WriteHeader(html, "OSPC");
                 WriteSummaryTitle(html);
 
-                foreach (var result in results)
+                Parallel.ForEach (results, result => 
                 {
                     var diffName = string.Format("{0}_{1}.html", Path.GetFileNameWithoutExtension(result.A.FilePath), Path.GetFileNameWithoutExtension(result.B.FilePath)).Replace(" ", "_");
 
-                    WriteSummaryResultLine(html, result, diffName);
+                    // This is the excpensive operation
                     WriteDetail(result, diffName);
 
-                    if (++progressCounter % 100 == 0) Console.Write(".");
-                }
+                    lock(_lock)
+                    {
+                        // sync as all threads write to the same stream
+                        WriteSummaryResultLine(html, result, diffName);
+                        if (++progressCounter % 100 == 0) Console.Write(".");
+                    }
+                });
                 WriteSummaryFooter(html);
                 WriteFooter(html);
                 html.Flush();
