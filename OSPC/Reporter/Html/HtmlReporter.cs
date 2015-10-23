@@ -249,7 +249,7 @@ namespace OSPC.Reporter.Html
             g.XAxis.Title.FontSpec.Size = 18.0f;
             g.YAxis.Title.FontSpec.Size = 18.0f;
         }
-#endregion
+        #endregion
 
         #region Details
         private void WriteDetail(CompareResult result, string diffName)
@@ -265,35 +265,52 @@ namespace OSPC.Reporter.Html
                     (double)result.TokenCount / (double)result.MatchCount);
                 html.WriteLine("<p id=\"detail-back\"><a href=\"index.html\">Back to summary</a></p>");
 
-                html.WriteLine("<div class=\"detail-col\">");
-                html.WriteLine("<h2>{0}</h2>", Path.GetFileName(result.A.FilePath));
-                html.WriteLine("<div class=\"detail-submission-summary\">Similarity: {0:n2} %<br/>Token: {1}</div>",
-                    result.SimilarityA * 100.0,
-                    result.A.Tokens.Length);
-
-                html.WriteLine("<div class=\"detail-code\">");
-                using (var rd = new StreamReader(result.A.FilePath))
+                if (result.SimilarityA >= result.SimilarityB)
                 {
-                    ColorDiff(html, result, rd, m => m.TokensA);
+                    WriteDetailA(result, html);
+                    WriteDetailB(result, html);
                 }
-                html.WriteLine("</div></div>");
-
-                html.WriteLine("<div class=\"detail-col\">");
-                html.WriteLine("<h2>{0}</h2>", Path.GetFileName(result.B.FilePath));
-                html.WriteLine("<div class=\"detail-submission-summary\">Similarity: {0:n2} %<br/>Token: {1}</div>",
-                    result.SimilarityB * 100.0,
-                    result.B.Tokens.Length);
-
-                html.WriteLine("<div class=\"detail-code\">");
-                using (var rd = new StreamReader(result.B.FilePath))
+                else
                 {
-                    ColorDiff(html, result, rd, m => m.TokensB);
+                    WriteDetailB(result, html);
+                    WriteDetailA(result, html);
                 }
-                html.WriteLine("</div></div>");
 
                 WriteFooter(html);
                 html.Flush();
             }
+        }
+
+        private void WriteDetailA(CompareResult result, StreamWriter html)
+        {
+            html.WriteLine("<div class=\"detail-col\">");
+            html.WriteLine("<h2>{0}</h2>", Path.GetFileName(result.A.FilePath));
+            html.WriteLine("<div class=\"detail-submission-summary\">Similarity: {0:n2} %<br/>Token: {1}</div>",
+                result.SimilarityA * 100.0,
+                result.A.Tokens.Length);
+
+            html.WriteLine("<div class=\"detail-code\">");
+            using (var rd = new StreamReader(result.A.FilePath))
+            {
+                ColorDiff(html, result, rd, m => m.TokensA);
+            }
+            html.WriteLine("</div></div>");
+        }
+
+        private void WriteDetailB(CompareResult result, StreamWriter html)
+        {
+            html.WriteLine("<div class=\"detail-col\">");
+            html.WriteLine("<h2>{0}</h2>", Path.GetFileName(result.B.FilePath));
+            html.WriteLine("<div class=\"detail-submission-summary\">Similarity: {0:n2} %<br/>Token: {1}</div>",
+                result.SimilarityB * 100.0,
+                result.B.Tokens.Length);
+
+            html.WriteLine("<div class=\"detail-code\">");
+            using (var rd = new StreamReader(result.B.FilePath))
+            {
+                ColorDiff(html, result, rd, m => m.TokensB);
+            }
+            html.WriteLine("</div></div>");
         }
 
         private void ColorDiff(StreamWriter diffHtml, CompareResult result, StreamReader rd, Func<Match, LinkedList<Token>> tokenExtractor)
@@ -345,7 +362,7 @@ namespace OSPC.Reporter.Html
         }
         private void WriteSummaryResultLine(StreamWriter html, CompareResult result, string diffName)
         {
-            html.WriteLine(@"<tr class=""summary-table-row"">
+            var format = @"<tr class=""summary-table-row"">
     <td><a href=""{6}"">{0}</a></td>
     <td class=""right"">{1:n2}</td>
     <td><a href=""{7}"">{2}</a></td>
@@ -354,17 +371,37 @@ namespace OSPC.Reporter.Html
     <td class=""right"">{5}</td>
     <td class=""right"">{8:n2}</td>
     <td><a href=""{9}"">Diff</a></td>
-</tr>",
-                                        result.A.FilePath.MaxLength(17, "...", true),
-                                        100.0 * result.SimilarityA,
-                                        result.B.FilePath.MaxLength(17, "...", true),
-                                        100.0 * result.SimilarityB,
-                                        result.MatchCount,
-                                        result.TokenCount,
-                                        result.A.FilePath,
-                                        result.B.FilePath,
-                                        (double)result.TokenCount / (double)result.MatchCount,
-                                        diffName);
+</tr>";
+            if (result.SimilarityA >= result.SimilarityB)
+            {
+                html.WriteLine(format,
+                        result.A.FilePath.MaxLength(17, "...", true),
+                        100.0 * result.SimilarityA,
+                        result.B.FilePath.MaxLength(17, "...", true),
+                        100.0 * result.SimilarityB,
+                        result.MatchCount,
+                        result.TokenCount,
+                        result.A.FilePath,
+                        result.B.FilePath,
+                        (double)result.TokenCount / (double)result.MatchCount,
+                        diffName);
+            }
+            else
+            {
+                // This is a little lie, as it does not match the table headers.
+                // But to the user the lables A and B are not important
+                html.WriteLine(format,
+                        result.B.FilePath.MaxLength(17, "...", true),
+                        100.0 * result.SimilarityB,
+                        result.A.FilePath.MaxLength(17, "...", true),
+                        100.0 * result.SimilarityA,
+                        result.MatchCount,
+                        result.TokenCount,
+                        result.B.FilePath,
+                        result.A.FilePath,
+                        (double)result.TokenCount / (double)result.MatchCount,
+                        diffName);
+            }
         }
         private static void WriteSummaryFooter(StreamWriter html)
         {
@@ -381,7 +418,7 @@ namespace OSPC.Reporter.Html
         }
         #endregion
 
-#region Commmon
+        #region Commmon
         private static void WriteHeader(StreamWriter html, string title)
         {
             html.WriteLine(@"<html>
@@ -405,6 +442,6 @@ namespace OSPC.Reporter.Html
         {
             html.WriteLine("</body></html>");
         }
-#endregion
+        #endregion
     }
 }
