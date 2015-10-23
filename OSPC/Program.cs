@@ -33,7 +33,7 @@ namespace OSPC
 
                 { "detailed", "Print a detailed report to the console", v => console = new Reporter.DetailedConsoleReporter() },
                 { "summary", "Print only a summay to the console. Usefull if --html is used.", v => console = new Reporter.SummaryConsoleReporter() },
-                { "html:", "Saves a html report to the specified directory. Defaults to \"report\"", v => html = new Reporter.HtmlReporter(v) },
+                { "html:", "Saves a html report to the specified directory. Defaults to \"report\"", v => html = new Reporter.Html.HtmlReporter(v) },
 
                 { "min-match-length=", "Minimum count of matching tokens, including non-matching tokens.", v => cfg.MIN_MATCH_LENGTH = int.Parse(v) },
                 { "max-match-distance=", "Maximum distance between tokens to count as a match. 1 = exact match.", v => cfg.MAX_MATCH_DISTANCE = int.Parse(v) },

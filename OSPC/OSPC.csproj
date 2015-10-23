@@ -55,10 +55,15 @@
     <Compile Include="Options.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reporter\Html\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Reporter\SummaryConsoleReporter.cs" />
     <Compile Include="Reporter\DetailedConsoleReporter.cs" />
     <Compile Include="Reporter\ConsoleReporter.cs" />
-    <Compile Include="Reporter\HtmlReporter.cs" />
+    <Compile Include="Reporter\Html\HtmlReporter.cs" />
     <Compile Include="Reporter\IReporter.cs" />
     <Compile Include="Submission.cs" />
     <Compile Include="Tokenizer.cs" />
@@ -69,6 +74,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="License-LGPL.txt" />
+    <EmbeddedResource Include="Reporter\Html\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reporter\Html\style.css" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ZedGraph;
 
-namespace OSPC.Reporter
+namespace OSPC.Reporter.Html
 {
     public class HtmlReporter : IReporter
     {
@@ -36,17 +36,19 @@ namespace OSPC.Reporter
             int progressCounter = 0;
             using (var html = new StreamWriter(Path.Combine(_outPath, "index.html")))
             {
-                WriteHeader(html);
+                WriteHeader(html, "OSPC");
+                WriteSummaryTitle(html);
 
                 foreach (var result in results)
                 {
                     var diffName = string.Format("{0}_{1}.html", Path.GetFileNameWithoutExtension(result.A.FilePath), Path.GetFileNameWithoutExtension(result.B.FilePath)).Replace(" ", "_");
 
-                    WriteResultLine(html, result, diffName);
-                    WriteDiff(result, diffName);
+                    WriteSummaryResultLine(html, result, diffName);
+                    WriteDetail(result, diffName);
 
                     if (++progressCounter % 100 == 0) Console.Write(".");
                 }
+                WriteSummaryFooter(html);
                 WriteFooter(html);
                 html.Flush();
             }
@@ -55,8 +57,11 @@ namespace OSPC.Reporter
             CreateTokenGraph(results);
             CreateTokenDetailGraph(results);
             CreatePercentGraph(results);
+
+            WriteStylesheet();
         }
 
+        #region Graphs
         private void CreateTokenGraph(List<CompareResult> results)
         {
             GraphPane g = new GraphPane(GraphRect, "Distribution of common token", "-", "# of token");
@@ -186,39 +191,50 @@ namespace OSPC.Reporter
             g.XAxis.Title.FontSpec.Size = 18.0f;
             g.YAxis.Title.FontSpec.Size = 18.0f;
         }
+        #endregion
 
-        private void WriteDiff(CompareResult result, string diffName)
+        #region Details
+        private void WriteDetail(CompareResult result, string diffName)
         {
-            using (var diffHtml = new StreamWriter(Path.Combine(_outPath, diffName)))
+            using (var html = new StreamWriter(Path.Combine(_outPath, diffName)))
             {
-                diffHtml.WriteLine("<html><head><meta charset=\"UTF-8\"><title>{0}</title></head><body>", diffName);
+                WriteHeader(html, diffName);
 
-                diffHtml.WriteLine("<div style=\"float:left;width:50%;font-family: monospace;white-space: pre;\">");
-                diffHtml.WriteLine("<h2>{0}</h2>", Path.GetFileName(result.A.FilePath));
-                diffHtml.WriteLine("<p>Match: {0:n2} %<br/>Token: {1}</p>", 
+                html.WriteLine("<h1>Details</h2>");
+                html.WriteLine("<p id=\"detail-summary\">Matches: {0}<br/>Common token: {1}<br/>Token / match: {2:n2}</p>",
+                    result.MatchCount,
+                    result.TokenCount,
+                    (double)result.TokenCount / (double)result.MatchCount);
+                html.WriteLine("<p id=\"detail-back\"><a href=\"index.html\">Back to summary</a></p>");
+
+                html.WriteLine("<div class=\"detail-col\">");
+                html.WriteLine("<h2>{0}</h2>", Path.GetFileName(result.A.FilePath));
+                html.WriteLine("<div class=\"detail-submission-summary\">Similarity: {0:n2} %<br/>Token: {1}</div>",
                     result.MatchA * 100.0,
                     result.A.Tokens.Length);
 
+                html.WriteLine("<div class=\"detail-code\">");
                 using (var rd = new StreamReader(result.A.FilePath))
                 {
-                    ColorDiff(diffHtml, result, rd, m => m.TokensA);
+                    ColorDiff(html, result, rd, m => m.TokensA);
                 }
-                diffHtml.WriteLine("</div>");
+                html.WriteLine("</div></div>");
 
-                diffHtml.WriteLine("<div style=\"float:left;width:50%;font-family: monospace;white-space: pre;\">");
-                diffHtml.WriteLine("<h2>{0}</h2>", Path.GetFileName(result.B.FilePath));
-                diffHtml.WriteLine("<p>Match: {0:n2} %<br/>Token: {1}</p>",
+                html.WriteLine("<div class=\"detail-col\">");
+                html.WriteLine("<h2>{0}</h2>", Path.GetFileName(result.B.FilePath));
+                html.WriteLine("<div class=\"detail-submission-summary\">Similarity: {0:n2} %<br/>Token: {1}</div>",
                     result.MatchB * 100.0,
                     result.B.Tokens.Length);
 
+                html.WriteLine("<div class=\"detail-code\">");
                 using (var rd = new StreamReader(result.B.FilePath))
                 {
-                    ColorDiff(diffHtml, result, rd, m => m.TokensB);
+                    ColorDiff(html, result, rd, m => m.TokensB);
                 }
-                diffHtml.WriteLine("</div>");
+                html.WriteLine("</div></div>");
 
-                diffHtml.WriteLine("</body></html>");
-                diffHtml.Flush();
+                WriteFooter(html);
+                html.Flush();
             }
         }
 
@@ -250,10 +266,28 @@ namespace OSPC.Reporter
                 }
             }
         }
+        #endregion
 
-        private void WriteResultLine(StreamWriter html, CompareResult result, string diffName)
+        #region Summay
+        private static void WriteSummaryTitle(StreamWriter html)
         {
-            html.WriteLine(@"<tr>
+            html.WriteLine("<h1>Open Software Plagiarism Checker</h1>");
+            html.WriteLine("<p id=\"summary-info\">Created on: {0}</p>", DateTime.Now);
+            html.WriteLine("<table id=\"summary-table\">");
+            html.WriteLine(@"<tr id=""summary-table-header"">
+    <th>A</th>
+    <th>% A</th>
+    <th>B</th>
+    <th>% B</th>
+    <th>Matches</th>
+    <th>Tokens</th>
+    <th>Tokens/Match</th>
+    <th>Diff</th>
+</tr>");
+        }
+        private void WriteSummaryResultLine(StreamWriter html, CompareResult result, string diffName)
+        {
+            html.WriteLine(@"<tr class=""summary-table-row"">
     <td><a href=""{6}"">{0}</a></td>
     <td class=""right"">{1:n2}</td>
     <td><a href=""{7}"">{2}</a></td>
@@ -274,55 +308,43 @@ namespace OSPC.Reporter
                                         (double)result.TokenCount / (double)result.MatchCount,
                                         diffName);
         }
-
-        private static void WriteHeader(StreamWriter html)
-        {
-            html.WriteLine(@"<html>
-<head>
-    <meta charset=""UTF-8"">
-    <title>OSPC</title>
-    <style>
-        table {
-            border-collapse: collapse;
-        }    
-        table, th, td {
-            border: 1px solid #CCCCCC;
-            border-collapse: collapse;
-        }    
-        td {
-            padding: 5px;
-        }
-        .right {
-            text-align: right;
-        }
-    </style>
-</head>
-<body>");
-            html.WriteLine("<h1>Open Software Plagiarism Checker</h1>");
-            html.WriteLine("<p>Created on: {0}</p>", DateTime.Now);
-            html.WriteLine("<table style=\"float: left;\">");
-            html.WriteLine(@"<tr>
-    <th>A</th>
-    <th>% A</th>
-    <th>B</th>
-    <th>% B</th>
-    <th>Matches</th>
-    <th>Tokens</th>
-    <th>Tokens/Match</th>
-    <th>Diff</th>
-</tr>");
-        }
-        private static void WriteFooter(StreamWriter html)
+        private static void WriteSummaryFooter(StreamWriter html)
         {
             html.WriteLine("</table>");
-            html.WriteLine("<div style=\"float: left;margin-left: 5px;\">");
+            html.WriteLine("<div id=\"summary-graph-pane\">");
             html.WriteLine("<img src=\"TokenGraph.png\" />");
             html.WriteLine("<br/>");
             html.WriteLine("<img src=\"TokenDetailGraph.png\" />");
             html.WriteLine("<br/>");
             html.WriteLine("<img src=\"PercentGraph.png\" />");
-            html.WriteLine("</div></body></html>");
+            html.WriteLine("</div>");
+        }
+        #endregion
+
+        #region Commmon
+        private static void WriteHeader(StreamWriter html, string title)
+        {
+            html.WriteLine(@"<html>
+<head>
+    <meta charset=""UTF-8"">
+    <title>{0}</title>
+    <link href=""style.css"" rel=""stylesheet"" />
+</head>
+<body>", title);
         }
 
+        private void WriteStylesheet()
+        {
+            using (var sw = new StreamWriter(Path.Combine(_outPath, "style.css")))
+            {
+                sw.Write(Html.Resources.style);
+            }
+        }
+
+        private static void WriteFooter(StreamWriter html)
+        {
+            html.WriteLine("</body></html>");
+        }
+        #endregion
     }
 }

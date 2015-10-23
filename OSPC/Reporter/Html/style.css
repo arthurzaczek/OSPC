@@ -1,0 +1,66 @@
+﻿/* Common */
+
+body {
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+
+table {
+    border-collapse: collapse;
+}    
+
+table, th, td {
+    border: 1px solid #CCCCCC;
+    border-collapse: collapse;
+}    
+
+td {
+    padding: 0.2em;
+}
+
+.right {
+    text-align: right;
+}
+
+/* Summary page */
+#summary-info {
+}
+
+#summary-table {
+    float: left;
+}
+
+#summary-table-header {
+
+}
+
+.summary-table-row {
+
+}
+
+#summary-graph-pane {
+    float: left;
+    margin-left: 1em;
+}
+
+/* Detail page */
+#detail-summary {
+
+}
+
+#detail-back {
+
+}
+
+.detail-submission-summary {
+
+}
+
+.detail-col {
+    float:left;
+    width:50%;
+}
+
+.detail-code {
+    font-family: monospace;
+    white-space: pre;
+}
