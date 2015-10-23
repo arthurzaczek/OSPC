@@ -74,7 +74,7 @@ namespace OSPC
             return maxIndex;
         }
 
-        public static double SlidingAvg(this double[] lst, int idx, int length = 2)
+        public static double SlidingAvg(this double[] lst, int idx, int length = 5)
         {
             var sum = 0.0;
             for (int i = idx; i < idx + length && i < lst.Length; i++)
