@@ -35,7 +35,7 @@ namespace OSPC.Reporter.Html
                 Directory.CreateDirectory(_outPath);
             }
 
-            int progressCounter = 0;
+            // Create summary page
             using (var html = new StreamWriter(Path.Combine(_outPath, "index.html")))
             {
                 WriteHeader(html, "OSPC");
@@ -43,17 +43,24 @@ namespace OSPC.Reporter.Html
 
                 foreach (var result in results)
                 {
-                    var diffName = string.Format("{0}_{1}.html", Path.GetFileNameWithoutExtension(result.A.FilePath), Path.GetFileNameWithoutExtension(result.B.FilePath)).Replace(" ", "_");
-
-                    WriteDetail(result, diffName);
-                    WriteSummaryResultLine(html, result, diffName);
-                    if (++progressCounter % 100 == 0) Console.Write(".");
+                    WriteSummaryResultLine(html, result, GetDetailFileName(result));
                 }
 
                 WriteSummaryFooter(html);
                 WriteFooter(html);
                 html.Flush();
             }
+
+            int progressCounter = 0;
+            object _lock = new object();
+            Parallel.ForEach(results, result =>
+            {
+                WriteDetail(result, GetDetailFileName(result));
+                lock (_lock)
+                {
+                    if (++progressCounter % 100 == 0) Console.Write(".");
+                }
+            });
             Console.WriteLine();
 
             CreateTokenGraph(results);
@@ -62,6 +69,11 @@ namespace OSPC.Reporter.Html
             CreateTokenMatchGraph(results);
 
             WriteStylesheet();
+        }
+
+        private static string GetDetailFileName(CompareResult result)
+        {
+            return string.Format("{0}_{1}.html", Path.GetFileNameWithoutExtension(result.A.FilePath), Path.GetFileNameWithoutExtension(result.B.FilePath)).Replace(" ", "_");
         }
 
         #region Graphs
