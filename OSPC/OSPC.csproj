@@ -68,7 +68,8 @@
     <Compile Include="Reporter\IReporter.cs" />
     <Compile Include="OSPCResult.cs" />
     <Compile Include="Submission.cs" />
-    <Compile Include="Tokenizer.cs" />
+    <Compile Include="Tokenizer\CLikeTokenizer.cs" />
+    <Compile Include="Tokenizer\Tokenizer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

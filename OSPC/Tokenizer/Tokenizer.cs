@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OSPC
+namespace OSPC.Tokenizer
 {
     public class Token
     {
@@ -40,7 +40,12 @@ namespace OSPC
         }
     }
 
-    public class Tokenizer
+    public interface ITokenizer
+    {
+        Token[] Split(TextReader rd);
+    }
+
+    public abstract class BaseTokenizer : ITokenizer
     {
         public static readonly char[] SEPERATORS = new char[] { ' ', '\n', '\r', '\t' };
         public static readonly char[] SYMBOLS = new char[] { ',', ';', '(', ')', '[', ']', '{', '}', '&', '|', '=', '<', '>', '!', '~', '+', '-', '/', '*' };

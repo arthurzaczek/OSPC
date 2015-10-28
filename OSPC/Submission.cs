@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OSPC.Tokenizer;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,8 +10,8 @@ namespace OSPC
 {
     public class Submission
     {
-        private Tokenizer _tokenizer;
-        public Submission(string filePath, Tokenizer tokenizer)
+        private ITokenizer _tokenizer;
+        public Submission(string filePath, ITokenizer tokenizer)
         {
             this.FilePath = filePath;
             this._tokenizer = tokenizer;

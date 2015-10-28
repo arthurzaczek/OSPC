@@ -57,7 +57,7 @@ namespace OSPC
                 dirs.Add(".");
             }
 
-            var tokenizer = new Tokenizer();
+            var tokenizer = new Tokenizer.CLikeTokenizer();
             var comparer = new Comparer(cfg);
             var friendfinder = new FriendFinder(cfg);
             var result = new OSPCResult();
