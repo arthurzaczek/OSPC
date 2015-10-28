@@ -8,11 +8,11 @@ namespace OSPC.Reporter
 {
     public class SummaryConsoleReporter : IReporter
     {
-        public void Create(List<CompareResult> results)
+        public void Create(OSPCResult r)
         {
-            Console.WriteLine("Resultset: {0}", results.Count);
-            Console.WriteLine("Max Matches: {0}", results.Max(m => m.MatchCount));
-            Console.WriteLine("Max Tokens: {0}", results.Max(m => m.TokenCount));
+            Console.WriteLine("Resultset: {0}", r.Results.Count);
+            Console.WriteLine("Max Matches: {0}", r.Results.Max(m => m.MatchCount));
+            Console.WriteLine("Max Tokens: {0}", r.Results.Max(m => m.TokenCount));
         }
     }
 }

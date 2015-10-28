@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="Comparer.cs" />
     <Compile Include="Configuration.cs" />
+    <Compile Include="FriendFinder.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="Program.cs" />
@@ -65,6 +66,7 @@
     <Compile Include="Reporter\ConsoleReporter.cs" />
     <Compile Include="Reporter\Html\HtmlReporter.cs" />
     <Compile Include="Reporter\IReporter.cs" />
+    <Compile Include="OSPCResult.cs" />
     <Compile Include="Submission.cs" />
     <Compile Include="Tokenizer.cs" />
   </ItemGroup>

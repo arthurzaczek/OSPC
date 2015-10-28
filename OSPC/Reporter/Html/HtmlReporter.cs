@@ -28,32 +28,48 @@ namespace OSPC.Reporter.Html
             this._outPath = outPath.IfNullOrWhiteSpace(Path.Combine(".", "report"));
         }
 
-        public void Create(List<CompareResult> results)
+        public void Create(OSPCResult r)
         {
             if (!Directory.Exists(_outPath))
             {
                 Directory.CreateDirectory(_outPath);
             }
 
-            // Create summary page
-            using (var html = new StreamWriter(Path.Combine(_outPath, "index.html")))
-            {
-                WriteHeader(html, "OSPC");
-                WriteSummaryTitle(html);
+            CreateSummaryPage(r);
+            CreateDetailPages(r);
+            CreateFriendFinderPage(r);
 
-                foreach (var result in results)
+            CreateTokenGraph(r);
+            CreateTokenDetailGraph(r);
+            CreatePercentGraph(r);
+            CreateTokenMatchGraph(r);
+
+            WriteStylesheet();
+        }
+
+        private void CreateFriendFinderPage(OSPCResult r)
+        {
+            using (var html = new StreamWriter(Path.Combine(_outPath, "friendfinder.html")))
+            {
+                WriteHeader(html, "OSPC - FriendFinder");
+                WriteFriendFinderTitle(html);
+
+                foreach(var f in r.Friends)
                 {
-                    WriteSummaryResultLine(html, result, GetDetailFileName(result));
+                    WriteFriendFinderLine(html, f);
                 }
 
-                WriteSummaryFooter(html);
+                WriteFriendFinderFooter(html);
                 WriteFooter(html);
                 html.Flush();
             }
+        }
 
+        private void CreateDetailPages(OSPCResult r)
+        {
             int progressCounter = 0;
             object _lock = new object();
-            Parallel.ForEach(results, result =>
+            Parallel.ForEach(r.Results, result =>
             {
                 WriteDetail(result, GetDetailFileName(result));
                 lock (_lock)
@@ -62,13 +78,24 @@ namespace OSPC.Reporter.Html
                 }
             });
             Console.WriteLine();
+        }
 
-            CreateTokenGraph(results);
-            CreateTokenDetailGraph(results);
-            CreatePercentGraph(results);
-            CreateTokenMatchGraph(results);
+        private void CreateSummaryPage(OSPCResult r)
+        {
+            using (var html = new StreamWriter(Path.Combine(_outPath, "index.html")))
+            {
+                WriteHeader(html, "OSPC");
+                WriteSummaryTitle(html);
 
-            WriteStylesheet();
+                foreach (var result in r.Results)
+                {
+                    WriteSummaryResultLine(html, result, GetDetailFileName(result));
+                }
+
+                WriteSummaryFooter(html);
+                WriteFooter(html);
+                html.Flush();
+            }
         }
 
         private static string GetDetailFileName(CompareResult result)
@@ -77,21 +104,21 @@ namespace OSPC.Reporter.Html
         }
 
         #region Graphs
-        private void CreateTokenGraph(List<CompareResult> results)
+        private void CreateTokenGraph(OSPCResult r)
         {
             GraphPane g = new GraphPane(GraphRect, "Distribution of common token", "-", "# of token");
             SetupGraph(g);
 
-            var lst = results.Select(i => (double)i.TokenCount).OrderBy(i => i).ToArray();
-            var derv_2 = lst.CalcDerv2();
+            var lst = r.Results.Select(i => (double)i.TokenCount).OrderBy(i => i).ToArray();
 
             var c = g.AddCurve("Common token",
-                Enumerable.Range(1, results.Count).Select(i => (double)i).ToArray(),
+                Enumerable.Range(1, lst.Length).Select(i => (double)i).ToArray(),
                 lst,
                 Color.Red);
             c.Symbol.IsVisible = false;
 
 #if SHOW_DERIVATION_2
+            var derv_2 = lst.CalcDerv2();
             c = g.AddCurve("Derivation 2",
                 Enumerable.Range(1, derv_2.Length).Select(i => (double)i).ToArray(),
                 derv_2.ToArray(),
@@ -100,8 +127,8 @@ namespace OSPC.Reporter.Html
             c.Symbol.IsVisible = false;
 #endif
 
-            AddLine(g, lst.Average(), Color.Blue, "Avg");
-            AddLine(g, lst[derv_2.MaxIndex()], Color.Green, "POI");
+            AddLine(g, r.AVG_TokenCount, Color.Blue, "Avg");
+            AddLine(g, r.POI_TokenCount, Color.Green, "POI");
 
             g.AxisChange();
             using (var img = g.GetImage())
@@ -110,24 +137,24 @@ namespace OSPC.Reporter.Html
             }
         }
 
-        private void CreateTokenDetailGraph(List<CompareResult> results)
+        private void CreateTokenDetailGraph(OSPCResult r)
         {
 
             GraphPane g = new GraphPane(GraphRect, "Distribution of common token - top 10%", "-", "# of Token");
             SetupGraph(g);
 
-            int count = (int)((double)results.Count * 0.1);
+            int count = (int)((double)r.Results.Count * 0.1);
 
-            var lst = results.Select(i => (double)i.TokenCount).OrderByDescending(i => i).Take(count).OrderBy(i => i).ToArray();
-            var derv_2 = lst.CalcDerv2();
+            var lst = r.Results.Select(i => (double)i.TokenCount).OrderByDescending(i => i).Take(count).OrderBy(i => i).ToArray();
 
             var c = g.AddCurve("Common token",
-                Enumerable.Range(1, count).Select(i => (double)i).ToArray(),
+                Enumerable.Range(1, lst.Length).Select(i => (double)i).ToArray(),
                 lst,
                 Color.Red);
             c.Symbol.IsVisible = false;
 
 #if SHOW_DERIVATION_2
+            var derv_2 = lst.CalcDerv2();
             c = g.AddCurve("Derivation 2",
                 Enumerable.Range(1, derv_2.Length).Select(i => (double)i).ToArray(),
                 derv_2.ToArray(),
@@ -136,8 +163,8 @@ namespace OSPC.Reporter.Html
             c.Symbol.IsVisible = false;
 #endif
 
-            AddLine(g, lst.Average(), Color.Blue, "Avg");
-            AddLine(g, lst[derv_2.MaxIndex()], Color.Green, "POI");
+            AddLine(g, r.AVG_TokenCount, Color.Blue, "Avg");
+            AddLine(g, r.POI_TokenCount, Color.Green, "POI");
 
             g.AxisChange();
             using (var img = g.GetImage())
@@ -146,21 +173,21 @@ namespace OSPC.Reporter.Html
             }
         }
 
-        private void CreatePercentGraph(List<CompareResult> results)
+        private void CreatePercentGraph(OSPCResult r)
         {
             GraphPane g = new GraphPane(GraphRect, "Distribution of % similarity", "-", "% similarity");
             SetupGraph(g);
 
-            var lst = results.SelectMany(i => new[] { 100.0 * i.SimilarityA, 100.0 * i.SimilarityB }).OrderBy(i => i).ToArray();
-            var derv_2 = lst.CalcDerv2();
+            var lst = r.Results.SelectMany(i => new[] { 100.0 * i.SimilarityA, 100.0 * i.SimilarityB }).OrderBy(i => i).ToArray();
 
             var c = g.AddCurve("Similarity",
-                Enumerable.Range(1, results.Count * 2).Select(i => (double)i).ToArray(),
+                Enumerable.Range(1, lst.Length).Select(i => (double)i).ToArray(),
                 lst,
                 Color.Red);
             c.Symbol.IsVisible = false;
 
 #if SHOW_DERIVATION_2
+            var derv_2 = lst.CalcDerv2();
             c = g.AddCurve("Derivation 2",
                 Enumerable.Range(1, derv_2.Length).Select(i => (double)i).ToArray(),
                 derv_2.ToArray(),
@@ -169,8 +196,8 @@ namespace OSPC.Reporter.Html
             c.Symbol.IsVisible = false;
 #endif
 
-            AddLine(g, lst.Average(), Color.Blue, "Avg");
-            AddLine(g, lst[derv_2.MaxIndex()], Color.Green, "POI");
+            AddLine(g, 100.0 * r.AVG_Similarity, Color.Blue, "Avg");
+            AddLine(g, 100.0 * r.POI_Similarity, Color.Green, "POI");
 
             g.AxisChange();
             using (var img = g.GetImage(512, 256, 72.0f))
@@ -178,21 +205,21 @@ namespace OSPC.Reporter.Html
                 img.Save(Path.Combine(_outPath, "PercentGraph.png"), ImageFormat.Png);
             }
         }
-        private void CreateTokenMatchGraph(List<CompareResult> results)
+        private void CreateTokenMatchGraph(OSPCResult r)
         {
             GraphPane g = new GraphPane(GraphRect, "Distribution of token / match", "-", "Token / match");
             SetupGraph(g);
 
-            var lst = results.Select(i => (double)i.TokenCount / (double)i.MatchCount).OrderBy(i => i).ToArray();
-            var derv_2 = lst.CalcDerv2();
+            var lst = r.Results.Select(i => (double)i.TokenCount / (double)i.MatchCount).OrderBy(i => i).ToArray();
 
             var c = g.AddCurve("Token / match",
-                Enumerable.Range(1, results.Count).Select(i => (double)i).ToArray(),
+                Enumerable.Range(1, lst.Length).Select(i => (double)i).ToArray(),
                 lst,
                 Color.Red);
             c.Symbol.IsVisible = false;
 
 #if SHOW_DERIVATION_2
+            var derv_2 = lst.CalcDerv2();
             c = g.AddCurve("Derivation 2",
                 Enumerable.Range(1, derv_2.Length).Select(i => (double)i).ToArray(),
                 derv_2.ToArray(),
@@ -201,8 +228,8 @@ namespace OSPC.Reporter.Html
             c.Symbol.IsVisible = false;
 #endif
 
-            AddLine(g, lst.Average(), Color.Blue, "Avg");
-            AddLine(g, lst[derv_2.MaxIndex()], Color.Green, "POI");
+            AddLine(g, r.AVG_TokenPerMatch, Color.Blue, "Avg");
+            AddLine(g, r.POI_TokenPerMatch, Color.Green, "POI");
 
             g.AxisChange();
             using (var img = g.GetImage())
@@ -427,6 +454,65 @@ namespace OSPC.Reporter.Html
             html.WriteLine("<br/>");
             html.WriteLine("<img src=\"PercentGraph.png\" />");
             html.WriteLine("</div>");
+        }
+        #endregion
+
+        #region FriendFinder
+        private static void WriteFriendFinderTitle(StreamWriter html)
+        {
+            html.WriteLine("<h1>OSPC - FriendFinder</h1>");
+            html.WriteLine("<table id=\"friend-table\">");
+            html.WriteLine(@"<tr id=""friend-table-header"">
+    <th>Submission</th>
+    <th>#</th>
+    <th>sum(Similarity)</th>
+    <th>Friend</th>
+    <th>Similarity</th>
+    <th>Matches</th>
+    <th>Diff</th>
+</tr>");
+        }
+        private void WriteFriendFinderLine(StreamWriter html, FriendOf f)
+        {
+            html.WriteLine(@"<tr class=""friend-table-row"">
+    <td><a href=""{1}"">{0}</a></td>
+    <td class=""right"">{2}</td>
+    <td class=""right"">{3:n2}</td>",
+                f.Submission.FilePath.MaxLength(17, "...", true),
+                f.Submission.FilePath,
+                f.InMatches.Count,
+                100.0 * f.SumSimilarity);
+            var first = true;
+            var lst = f.InMatches
+                .OrderByDescending(i => f.Submission.FilePath == i.A.FilePath ? i.SimilarityB : i.SimilarityA);
+            foreach (var match in lst)
+            {
+                if(!first)
+                {
+                    html.WriteLine(@"<tr class=""friend-table-detail-row"">
+<td></td><td></td><td></td>");
+                }
+                first = false;
+
+                var isA = f.Submission.FilePath == match.A.FilePath;
+                var path = isA ? match.B.FilePath : match.A.FilePath;
+                html.WriteLine(@"
+    <td><a href=""{1}"">{0}</a></td>
+    <td class=""right"">{2:n2}</td>
+    <td class=""right"">{3}</td>
+    <td><a href=""{4}"">Diff</a></td>
+</tr>",
+                path.MaxLength(17, "...", true),
+                path,
+                100.0 * (isA ? match.SimilarityB : match.SimilarityA),
+                match.MatchCount,
+                GetDetailFileName(match)
+                );
+            }
+        }
+        private static void WriteFriendFinderFooter(StreamWriter html)
+        {
+            html.WriteLine("</table>");
         }
         #endregion
 

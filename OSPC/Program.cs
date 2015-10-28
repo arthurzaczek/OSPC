@@ -59,9 +59,11 @@ namespace OSPC
 
             var tokenizer = new Tokenizer();
             var comparer = new Comparer(cfg);
+            var friendfinder = new FriendFinder(cfg);
+            var result = new OSPCResult();
 
             var files = dirs
-                .SelectMany(d => filter.Select(f => new Tuple<string, string>(d, f)))
+                .SelectMany(d => filter.Select(f => new Tuple<string, string>(d, f))) // TODO: Change to Submission!
                 .SelectMany(t => Directory.GetFiles(t.Item1, t.Item2))
                 .Concat(extra)
                 .ToArray();
@@ -77,7 +79,7 @@ namespace OSPC
                 }
             }
 
-            var results = new List<CompareResult>();
+            var compareResult = new List<CompareResult>();
 
             Console.Write("Comparing {0} files ", files.Length);
 
@@ -100,28 +102,52 @@ namespace OSPC
 
                 lock (_lock)
                 {
-                    results.Add(r);
+                    compareResult.Add(r);
                     if (++progressCounter % 100 == 0) Console.Write(".");
                 }
             });
 
             Console.WriteLine();
 
-            Console.WriteLine("... finished in {0:n2} sec.", watch.Elapsed.TotalSeconds);
-            Console.WriteLine("Creating reports");
+            Console.WriteLine("  finished; time: {0:n2} sec.", watch.Elapsed.TotalSeconds);
 
-            results = results
+            Console.WriteLine("Creating statistics");
+            result.Results = compareResult
                 .Where(r => r.MatchCount > 0)
                 .OrderByDescending(r => Math.Max(r.SimilarityA, r.SimilarityB))
                 .ToList();
 
+            double[] lst;
+
+            lst = result.Results.SelectMany(i => new[] { i.SimilarityA, i.SimilarityB }).OrderBy(i => i).ToArray();
+            result.AVG_Similarity = lst.Average();
+            result.POI_Similarity = lst[lst.CalcDerv2().MaxIndex()];
+
+            lst = result.Results.Select(i => (double)i.TokenCount).OrderBy(i => i).ToArray();
+            result.AVG_TokenCount = lst.Average();
+            result.POI_TokenCount = lst[lst.CalcDerv2().MaxIndex()];
+
+            lst = result.Results.Select(i => (double)i.TokenCount / (double)i.MatchCount).OrderBy(i => i).ToArray();
+            result.AVG_TokenPerMatch = lst.Average();
+            result.POI_TokenPerMatch = lst[lst.CalcDerv2().MaxIndex()];
+
+            if(cfg.MIN_FRIEND_FINDER_SIMILARITY < 0)
+            {
+                cfg.MIN_FRIEND_FINDER_SIMILARITY = result.POI_Similarity - 0.2;
+            }
+
+            result.Friends = friendfinder.Find(compareResult);
+
+            Console.WriteLine("  finished; time: {0:n2} sec.", watch.Elapsed.TotalSeconds);
+
+            Console.WriteLine("Creating reports");
             if (html != null)
             {
-                html.Create(results);
+                html.Create(result);
             }
-            console.Create(results);
+            console.Create(result);
 
-            Console.WriteLine("... finished in total {0:n2} sec.", watch.Elapsed.TotalSeconds);
+            Console.WriteLine("  finished in total {0:n2} sec.", watch.Elapsed.TotalSeconds);
         }
 
         private static void ShowHelp(OptionSet p)

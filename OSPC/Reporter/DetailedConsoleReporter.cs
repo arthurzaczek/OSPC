@@ -8,9 +8,9 @@ namespace OSPC.Reporter
 {
     public class DetailedConsoleReporter : IReporter
     {
-        public void Create(List<CompareResult> results)
+        public void Create(OSPCResult r)
         {
-            foreach (var result in results.Take(10))
+            foreach (var result in r.Results.Take(10))
             {
                 Console.WriteLine(result.A.FilePath);
                 Console.WriteLine(result.B.FilePath);

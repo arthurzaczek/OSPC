@@ -27,5 +27,15 @@ namespace OSPC
                 Tokens = _tokenizer.Split(rd);
             }
         }
+
+        public override string ToString()
+        {
+            return FilePath.MaxLength(20, trimStart: true);
+        }
+
+        public override int GetHashCode()
+        {
+            return FilePath.GetHashCode();
+        }
     }
 }
