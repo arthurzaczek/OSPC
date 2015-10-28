@@ -47,13 +47,26 @@ namespace OSPC.Tokenizer
 
     public abstract class BaseTokenizer : ITokenizer
     {
-        public static readonly char[] SEPERATORS = new char[] { ' ', '\n', '\r', '\t' };
-        public static readonly char[] SYMBOLS = new char[] { ',', ';', '(', ')', '[', ']', '{', '}', '&', '|', '=', '<', '>', '!', '~', '+', '-', '/', '*' };
+        public static readonly char[] DEFAULT_SEPERATORS = new char[] { ' ', '\n', '\r', '\t' };
+        public static readonly char[] DEFAULT_SYMBOLS = new char[] { ',', ';', '(', ')', '[', ']', '{', '}', '&', '|', '=', '<', '>', '!', '~', '+', '-', '/', '*' };
+
+        protected virtual List<char> GetSeperators()
+        {
+            return new List<char>(DEFAULT_SEPERATORS);
+        }
+
+        protected virtual List<char> GetSymbols()
+        {
+            return new List<char>(DEFAULT_SYMBOLS);
+        }
+
         public Token[] Split(TextReader rd)
         {
             int read;
             Token current = null;
             var result = new List<Token>();
+            var seperators = GetSeperators();
+            var symbols = GetSymbols();
 
             bool inQuote = false;
             int pos = 0;
@@ -61,7 +74,7 @@ namespace OSPC.Tokenizer
             while ((read = rd.Read()) != -1)
             {
                 var c = (char)read;
-                if (SEPERATORS.Contains(c) && !inQuote)
+                if (seperators.Contains(c) && !inQuote)
                 {
                     if (current != null)
                     {
@@ -71,7 +84,7 @@ namespace OSPC.Tokenizer
 
                     current = null;
                 }
-                else if (SYMBOLS.Contains(c) && !inQuote)
+                else if (symbols.Contains(c) && !inQuote)
                 {
                     if (current != null)
                     {
