@@ -51,7 +51,7 @@ namespace OSPC.Reporter.Html
         {
             using (var html = new StreamWriter(Path.Combine(_outPath, "friendfinder.html")))
             {
-                WriteHeader(html, "OSPC - FriendFinder");
+                WriteHeader(html, "OSPC - FriendFinder", new TupleList<string, string>() { { "index.html", "Results" } });
                 WriteFriendFinderTitle(html);
 
                 foreach(var f in r.Friends)
@@ -84,7 +84,7 @@ namespace OSPC.Reporter.Html
         {
             using (var html = new StreamWriter(Path.Combine(_outPath, "index.html")))
             {
-                WriteHeader(html, "OSPC");
+                WriteHeader(html, "OSPC", new TupleList<string, string>() { { "friendfinder.html", "Friend Finder" } });
                 WriteSummaryTitle(html);
 
                 foreach (var result in r.Results)
@@ -295,14 +295,13 @@ namespace OSPC.Reporter.Html
         {
             using (var html = new StreamWriter(Path.Combine(_outPath, diffName)))
             {
-                WriteHeader(html, diffName);
+                WriteHeader(html, diffName, new TupleList<string, string>() { { "index.html", "Results" }, { "friendfinder.html", "Friend Finder" } });
 
                 html.WriteLine("<h1>Details</h2>");
                 html.WriteLine("<p id=\"detail-summary\">Matches: {0}<br/>Common token: {1}<br/>Token / match: {2:n2}</p>",
                     result.MatchCount,
                     result.TokenCount,
                     (double)result.TokenCount / (double)result.MatchCount);
-                html.WriteLine("<p id=\"detail-back\"><a href=\"index.html\">Back to summary</a></p>");
 
                 if (result.SimilarityA >= result.SimilarityB)
                 {
@@ -474,10 +473,10 @@ namespace OSPC.Reporter.Html
         }
         private void WriteFriendFinderLine(StreamWriter html, FriendOf f)
         {
-            html.WriteLine(@"<tr class=""friend-table-row"">
-    <td><a href=""{1}"">{0}</a></td>
-    <td class=""right"">{2}</td>
-    <td class=""right"">{3:n2}</td>",
+            html.WriteLine(@"<tr class=""friend-table-group-row"">
+    <td class=""friend-group-col""><a href=""{1}"">{0}</a></td>
+    <td class=""friend-group-col right"">{2}</td>
+    <td class=""friend-group-col right"">{3:n2}</td>",
                 f.Submission.FilePath.MaxLength(17, "...", true),
                 f.Submission.FilePath,
                 f.InMatches.Count,
@@ -490,17 +489,19 @@ namespace OSPC.Reporter.Html
                 if(!first)
                 {
                     html.WriteLine(@"<tr class=""friend-table-detail-row"">
-<td></td><td></td><td></td>");
+<td class=""friend-group-col empty first""></td>
+<td class=""friend-group-col empty""></td>
+<td class=""friend-group-col empty last""></td>");
                 }
                 first = false;
 
                 var isA = f.Submission.FilePath == match.A.FilePath;
                 var path = isA ? match.B.FilePath : match.A.FilePath;
                 html.WriteLine(@"
-    <td><a href=""{1}"">{0}</a></td>
-    <td class=""right"">{2:n2}</td>
-    <td class=""right"">{3}</td>
-    <td><a href=""{4}"">Diff</a></td>
+    <td class=""friend-detail-col""><a href=""{1}"">{0}</a></td>
+    <td class=""friend-detail-col right"">{2:n2}</td>
+    <td class=""friend-detail-col right"">{3}</td>
+    <td class=""friend-detail-col""><a href=""{4}"">Diff</a></td>
 </tr>",
                 path.MaxLength(17, "...", true),
                 path,
@@ -517,8 +518,12 @@ namespace OSPC.Reporter.Html
         #endregion
 
         #region Commmon
-        private static void WriteHeader(StreamWriter html, string title)
+        private static void WriteHeader(StreamWriter html, string title, TupleList<string, string> menu)
         {
+            if (html == null) throw new ArgumentNullException("html");
+            if (string.IsNullOrWhiteSpace(title)) throw new ArgumentNullException("title");
+            if (menu == null) throw new ArgumentNullException("menu");
+
             html.WriteLine(@"<html>
 <head>
     <meta charset=""UTF-8"">
@@ -526,6 +531,13 @@ namespace OSPC.Reporter.Html
     <link href=""style.css"" rel=""stylesheet"" />
 </head>
 <body>", title);
+
+            html.WriteLine(@"<ul id=""menu"">");
+            foreach(var item in menu)
+            {
+                html.WriteLine(@"<li class=""menu-item""><a class=""menu-link"" href=""{0}"">{1}</a></li>", item.Item1, item.Item2);
+            }
+            html.WriteLine(@"</ul>");
         }
 
         private void WriteStylesheet()

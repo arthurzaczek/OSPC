@@ -2,6 +2,8 @@
 
 body {
     font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+	padding: 0;
+	margin: 1em;
 }
 
 table {
@@ -19,6 +21,26 @@ td {
 
 .right {
     text-align: right;
+}
+
+/* Menu */
+ul#menu {
+	list-style-type: none;
+    margin: -1em;
+	margin-bottom: 1em;
+    padding: 0.5em;
+	background-color: black;
+}
+
+li.menu-item {
+    display: inline;
+}
+
+a.menu-link {
+	color: white;
+	font-weight: bold;
+	text-decoration: none;
+	margin-right: 1em;
 }
 
 /* Summary page */
@@ -47,10 +69,6 @@ td {
 
 }
 
-#detail-back {
-
-}
-
 .detail-submission-summary {
 
 }
@@ -63,4 +81,24 @@ td {
 .detail-code {
     font-family: monospace;
     white-space: pre;
+}
+
+/* Friend Finder page */
+.friend-table {
+}
+
+.friend-table-header {
+}
+
+.friend-table-group-row {
+	background-color: #EEEEEE;
+}
+
+.friend-table-detail-row {
+}
+
+.friend-group-col {
+}
+
+.friend-detail-col {
 }
