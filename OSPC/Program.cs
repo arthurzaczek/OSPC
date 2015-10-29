@@ -1,4 +1,6 @@
-﻿using NDesk.Options;
+﻿//#define SINGLE_THREADED
+
+using NDesk.Options;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -88,7 +90,11 @@ namespace OSPC
             int progressCounter = 0;
             object _lock = new object();
 
+#if SINGLE_THREADED
+            foreach(var pair in compareList)
+#else
             Parallel.ForEach(compareList, pair =>
+#endif
             {
                 if (Path.GetExtension(pair.Item1) != Path.GetExtension(pair.Item2)) return;
 
@@ -105,8 +111,10 @@ namespace OSPC
                     compareResult.Add(r);
                     if (++progressCounter % 100 == 0) Console.Write(".");
                 }
-            });
-
+            }
+#if !SINGLE_THREADED
+            );
+#endif
             Console.WriteLine();
 
             Console.WriteLine("  finished; time: {0:n2} sec.", watch.Elapsed.TotalSeconds);
