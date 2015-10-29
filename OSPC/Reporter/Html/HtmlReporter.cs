@@ -1,4 +1,5 @@
 ﻿// #define SHOW_DERIVATION_2
+// #define SINGLE_THREADED
 
 using OSPC.Tokenizer;
 using System;
@@ -70,14 +71,21 @@ namespace OSPC.Reporter.Html
         {
             int progressCounter = 0;
             object _lock = new object();
+#if SINGLE_THREADED
+            foreach(var result in r.Results)
+#else
             Parallel.ForEach(r.Results, result =>
+#endif
             {
                 WriteDetail(result, GetDetailFileName(result));
                 lock (_lock)
                 {
                     if (++progressCounter % 100 == 0) Console.Write(".");
                 }
-            });
+            }
+#if !SINGLE_THREADED
+            );
+#endif
             Console.WriteLine();
         }
 
@@ -104,7 +112,7 @@ namespace OSPC.Reporter.Html
             return string.Format("{0}_{1}.html", Path.GetFileNameWithoutExtension(result.A.FilePath), Path.GetFileNameWithoutExtension(result.B.FilePath)).Replace(" ", "_");
         }
 
-        #region Graphs
+#region Graphs
         private void CreateTokenGraph(OSPCResult r)
         {
             GraphPane g = new GraphPane(GraphRect, "Distribution of common token", "-", "# of token");
@@ -289,9 +297,9 @@ namespace OSPC.Reporter.Html
             g.XAxis.Title.FontSpec.Size = 18.0f;
             g.YAxis.Title.FontSpec.Size = 18.0f;
         }
-        #endregion
+#endregion
 
-        #region Details
+#region Details
         private void WriteDetail(CompareResult result, string diffName)
         {
             using (var html = new StreamWriter(Path.Combine(_outPath, diffName)))
@@ -380,9 +388,9 @@ namespace OSPC.Reporter.Html
                 }
             }
         }
-        #endregion
+#endregion
 
-        #region Summay
+#region Summay
         private static void WriteSummaryTitle(StreamWriter html)
         {
             html.WriteLine("<h1>Open Software Plagiarism Checker</h1>");
@@ -455,9 +463,9 @@ namespace OSPC.Reporter.Html
             html.WriteLine("<img src=\"PercentGraph.png\" />");
             html.WriteLine("</div>");
         }
-        #endregion
+#endregion
 
-        #region FriendFinder
+#region FriendFinder
         private static void WriteFriendFinderTitle(StreamWriter html)
         {
             html.WriteLine("<h1>OSPC - FriendFinder</h1>");
@@ -516,9 +524,9 @@ namespace OSPC.Reporter.Html
         {
             html.WriteLine("</table>");
         }
-        #endregion
+#endregion
 
-        #region Commmon
+#region Commmon
         private static void WriteHeader(StreamWriter html, string title, TupleList<string, string> menu)
         {
             if (html == null) throw new ArgumentNullException("html");
@@ -553,6 +561,6 @@ namespace OSPC.Reporter.Html
         {
             html.WriteLine("</body></html>");
         }
-        #endregion
+#endregion
     }
 }
