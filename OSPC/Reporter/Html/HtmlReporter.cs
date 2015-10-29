@@ -373,10 +373,10 @@ namespace OSPC.Reporter.Html
                     // in match
                     diffHtml.Write("<span style=\"font-weight: bold;color: {0}\">", Colors[currentMatch.Current.Index % Colors.Length]);
 
-                    diffHtml.Write(System.Web.HttpUtility.HtmlEncode(content.Substring(idx, end - idx + 1)));
+                    diffHtml.Write(System.Web.HttpUtility.HtmlEncode(content.Substring(idx, end - idx)));
                     diffHtml.Write("</span>");
                     currentMatch.MoveNext();
-                    idx = end + 1;
+                    idx = end;
                 }
             }
         }

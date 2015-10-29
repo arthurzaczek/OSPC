@@ -69,53 +69,113 @@ namespace OSPC.Tokenizer
             var symbols = GetSymbols();
 
             bool inQuote = false;
+            bool inComment = false;
+
+            string quoteTerminator = null;
+            string commentTerminator = null;
+
             int pos = 0;
 
             while ((read = rd.Read()) != -1)
             {
                 var c = (char)read;
-                if (seperators.Contains(c) && !inQuote)
+                var current_pos = pos;
+                if(!inQuote && !inComment && CheckCommentStart(c, rd, ref pos, out commentTerminator))
                 {
-                    if (current != null)
-                    {
-                        current.Seal();
-                        result.Add(current);
-                    }
-
-                    current = null;
+                    inComment = true;
+                    continue;
                 }
-                else if (symbols.Contains(c) && !inQuote)
+                else if(!inQuote && inComment && CheckCommentEnd(c, rd, ref pos, commentTerminator))
                 {
-                    if (current != null)
-                    {
-                        current.Seal();
-                        result.Add(current);
-                    }
+                    inComment = false;
+                    continue;
+                }
+                else if(!inQuote && inComment)
+                {
+                    // ignore and continue
+                    pos++;
+                    continue;
+                }
 
-                    current = new Token(pos);
+                if (!inQuote && !inComment && CheckQuoteStart(c, rd, ref pos, out quoteTerminator))
+                {
+                    inQuote = true;
+                    Reset(current, result);
+                    current = new Token(current_pos);
                     current.Append(c);
-                    current.Seal();
-                    result.Add(current);
+                    continue;
+                }
+                else if (inQuote && !inComment && CheckQuoteEnd(c, rd, ref pos, quoteTerminator))
+                {
+                    inQuote = false;
+                    current.Append(c);
+                    current = Reset(current, result);
+                    continue;
+                }
 
-                    current = null;
+                if (!inQuote && seperators.Contains(c))
+                {
+                    current = Reset(current, result);
+                }
+                else if (!inQuote && symbols.Contains(c))
+                {
+                    Reset(current, result);
+
+                    current = new Token(current_pos);
+                    current.Append(c);
+                    
+                    current = Reset(current, result);
                 }
                 else
                 {
                     if (current == null)
                     {
-                        current = new Token(pos);
+                        current = new Token(current_pos);
                     }
                     current.Append(c);
-                }
-
-                if (c == '\"')
-                {
-                    inQuote = !inQuote;
-                }
+                }                
                 pos++;
             }
 
             return result.ToArray();
+        }
+
+        private Token Reset(Token current, List<Token> result)
+        {
+            if (current != null)
+            {
+                current.Seal();
+                result.Add(current);
+            }
+
+            return null;
+        }
+
+        protected abstract bool CheckCommentStart(char c, TextReader rd, ref int pos, out string terminator);
+        protected abstract bool CheckCommentEnd(char c, TextReader rd, ref int pos, string terminator);
+
+        protected virtual bool CheckQuoteStart(char c, TextReader rd, ref int pos, out string terminator)
+        {
+            terminator = null;
+            if(c == '\"')
+            {
+                pos++;
+                terminator = "\"";
+                return true;
+            }
+            else if (c == '\'')
+            {
+                pos++;
+                terminator = "\'";
+                return true;
+            }
+            return false;
+        }
+        protected virtual bool CheckQuoteEnd(char c, TextReader rd, ref int pos, string terminator)
+        {
+            var result = c == terminator.First();
+            if (result) pos++;
+            return result;
         }
     }
 }
