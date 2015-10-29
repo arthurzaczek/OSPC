@@ -44,7 +44,7 @@ namespace OSPC
 
             var extra = p.Parse(args);
 
-            if(showHelp)
+            if (showHelp)
             {
                 ShowHelp(p);
                 return;
@@ -68,16 +68,22 @@ namespace OSPC
                 .SelectMany(d => filter.Select(f => new Tuple<string, string>(d, f))) // TODO: Change to Submission!
                 .SelectMany(t => Directory.GetFiles(t.Item1, t.Item2))
                 .Concat(extra)
+                .Select(f =>
+                {
+                    var s = new Submission(f, tokenizer);
+                    s.Parse();
+                    return s;
+                })
                 .ToArray();
 
-            var compareList = new List<Tuple<string, string>>();
+            var compareList = new List<Tuple<Submission, Submission>>();
             for (int a = 0; a < files.Length; a++)
             {
                 for (int b = a + 1; b < files.Length; b++)
                 {
-                    if (Path.GetExtension(files[a]) != Path.GetExtension(files[b])) continue;
+                    if (Path.GetExtension(files[a].FilePath) != Path.GetExtension(files[b].FilePath)) continue;
 
-                    compareList.Add(new Tuple<string, string>(files[a], files[b]));
+                    compareList.Add(new Tuple<Submission, Submission>(files[a], files[b]));
                 }
             }
 
@@ -96,15 +102,7 @@ namespace OSPC
             Parallel.ForEach(compareList, pair =>
 #endif
             {
-                if (Path.GetExtension(pair.Item1) != Path.GetExtension(pair.Item2)) return;
-
-                var s1 = new Submission(pair.Item1, tokenizer);
-                s1.Parse();
-
-                var s2 = new Submission(pair.Item2, tokenizer);
-                s2.Parse();
-
-                var r = comparer.Compare(s1, s2);
+                var r = comparer.Compare(pair.Item1, pair.Item2);
 
                 lock (_lock)
                 {
@@ -139,7 +137,7 @@ namespace OSPC
             result.AVG_TokenPerMatch = lst.Average();
             result.POI_TokenPerMatch = lst[lst.CalcDerv2().MaxIndex()];
 
-            if(cfg.MIN_FRIEND_FINDER_SIMILARITY < 0)
+            if (cfg.MIN_FRIEND_FINDER_SIMILARITY < 0)
             {
                 cfg.MIN_FRIEND_FINDER_SIMILARITY = result.POI_Similarity - 0.2;
             }
