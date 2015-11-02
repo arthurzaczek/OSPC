@@ -127,19 +127,19 @@ if(x < y)
 
 A		  | B		  | Match
 --------- | --------- | ---------
-if		  | if		  | 
-(		  | (		  |
-a		  | x		  | No
-<		  | <		  |
-b		  | y		  | No
-)		  | )		  |
-{		  | {		  |
-printf	  | printf	  |
-(		  | (		  |
-"Yes"	  | "True"	  | No
-)		  | )		  |
-;		  | ;		  |
-}		  | }		  |
+if		  | if		  | Yes
+(		  | (		  | Yes
+a		  | x		  | **No**
+<		  | <		  | Yes
+b		  | y		  | **No**
+)		  | )		  | Yes
+{		  | {		  | Yes
+printf	  | printf	  | Yes
+(		  | (		  | Yes
+"Yes"	  | "True"	  | **No**
+)		  | )		  | Yes
+;		  | ;		  | Yes
+}		  | }		  | Yes
 **13**	  | **13**	  | **3**
 
 10 Token of 13 are the same, resulting in a 76.92 % similarity. It depends on your individual progarmming course, if this match count's as equal or not.
