@@ -15,8 +15,6 @@ namespace OSPC
     {
         static void Main(string[] args)
         {
-            var filter = new List<string>();
-            var dirs = new List<string>();
             var cfg = new Configuration();
             bool showHelp = false;
             Reporter.IReporter html = null;
@@ -30,8 +28,8 @@ namespace OSPC
             {
                 { "h|?|help", "Prints this help", v => showHelp = true },
 
-                { "f=", "File filter. If -d is specified, then -f defaults to \"*.*.\"", v => filter.Add(v) },
-                { "d=", "Specifies a directory where the filer applies. If -f is specified, then -d defaults to \".\"", v => dirs.Add(v) },
+                { "f=", "File filter. If -d is specified, then -f defaults to \"*.*.\"", v => cfg.Filter.Add(v) },
+                { "d=", "Specifies a directory where the filer applies. If -f is specified, then -d defaults to \".\"", v => cfg.Dirs.Add(v) },
 
                 { "detailed", "Print a detailed report to the console", v => console = new Reporter.DetailedConsoleReporter() },
                 { "summary", "Print only a summay to the console. Usefull if --html is used.", v => console = new Reporter.SummaryConsoleReporter() },
@@ -52,13 +50,13 @@ namespace OSPC
                 return;
             }
 
-            if (filter.Count == 0 && dirs.Count > 0)
+            if (cfg.Filter.Count == 0 && cfg.Dirs.Count > 0)
             {
-                filter.Add("*.*");
+                cfg.Filter.Add("*.*");
             }
-            if (dirs.Count == 0 && filter.Count > 0)
+            if (cfg.Dirs.Count == 0 && cfg.Filter.Count > 0)
             {
-                dirs.Add(".");
+                cfg.Dirs.Add(".");
             }
 
             var tokenizer = new Tokenizer.CLikeTokenizer();
@@ -66,8 +64,8 @@ namespace OSPC
             var friendfinder = new FriendFinder(cfg);
             var result = new OSPCResult();
 
-            var files = dirs
-                .SelectMany(d => filter.Select(f => new Tuple<string, string>(d, f))) // TODO: Change to Submission!
+            var files = cfg.Dirs
+                .SelectMany(d => cfg.Filter.Select(f => new Tuple<string, string>(d, f))) // TODO: Change to Submission!
                 .SelectMany(t => Directory.GetFiles(t.Item1, t.Item2))
                 .Concat(extra)
                 .Select(f =>

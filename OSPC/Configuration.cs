@@ -8,6 +8,11 @@ namespace OSPC
 {
     public class Configuration
     {
+        public Configuration()
+        {
+            Filter = new List<string>();
+            Dirs = new List<string>();
+        }
         /// <summary>
         /// Minimum count of matching tokens, including non-matching tokens.
         /// </summary>
@@ -27,5 +32,9 @@ namespace OSPC
         public double MIN_FRIEND_FINDER_SIMILARITY = -1;
 
         public bool Verbose { get; internal set; }
+
+        public List<string> Filter { get; private set; }
+        public List<string> Dirs { get; private set; }
+
     }
 }
