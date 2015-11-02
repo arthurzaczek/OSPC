@@ -73,26 +73,26 @@ Each file is split up into tokens and symbols by a Tokenizer. Comments and white
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 if(a < b)
 {
-	/* Yes! */
-	printf("Yes");
+    /* Yes! */
+    printf("Yes");
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The result would be:
 
----------	--------------------------------
-if			Token
-(			Symbol
-a			Token
-<			Symbol
-b			Token
-)			Symbol
-{			Symbol
-printf		Token
-(			Symbol
-"Yes"		Token (as quoted string)
-)			Symbol
-;			Symbol
-}			Symbol
----------	--------------------------------
+--------- | --------------------------------
+if		  | Token
+(		  | Symbol
+a		  | Token
+<		  | Symbol
+b		  | Token
+)		  | Symbol
+{		  | Symbol
+printf	  | Token
+(		  | Symbol
+"Yes"	  | Token (as quoted string)
+)		  | Symbol
+;		  | Symbol
+}		  | Symbol
+--------- | --------------------------------
 
