@@ -94,5 +94,53 @@ printf	  | Token
 )		  | Symbol
 ;		  | Symbol
 }		  | Symbol
---------- | --------------------------------
+
+
+Then, each file is compared with all other files. Each Token is compared with all other token. Finally, the longest match are selected as the result match.
+
+What is a match? A match is the longest chain of equal tokens, with some exceptions. 
+
+1. Every {max-match-distance} token must match
+2. {min-common-token} % of token must match.
+
+### Example:
+
+**File A**
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if(a < b)
+{
+    /* Yes! */
+    printf("Yes");
+}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**File B**
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if(x < y)
+{
+    // True
+    printf("True");
+}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A		  | B		  | Match
+--------- | --------- | ---------
+if		  | if		  | 
+(		  | (		  |
+a		  | x		  | No
+<		  | <		  |
+b		  | y		  | No
+)		  | )		  |
+{		  | {		  |
+printf	  | printf	  |
+(		  | (		  |
+"Yes"	  | "True"	  | No
+)		  | )		  |
+;		  | ;		  |
+}		  | }		  |
+**13**	  | **13**	  | **3**
+
+10 Token of 13 are the same, resulting in a 76.92 % similarity. It depends on your individual progarmming course, if this match count's as equal or not.
 
