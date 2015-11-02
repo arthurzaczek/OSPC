@@ -17,8 +17,14 @@ namespace OSPC
         {
             var cfg = new Configuration();
             bool showHelp = false;
+
             Reporter.IReporter html = null;
             Reporter.IReporter console = new Reporter.ConsoleReporter();
+
+            Tokenizer.ITokenizer tokenizer = new Tokenizer.CLikeTokenizer();
+            var comparer = new Comparer(cfg);
+            var friendfinder = new FriendFinder(cfg);
+            var result = new OSPCResult();
 
             Console.WriteLine("Open Software Plagiarism Checker");
             Console.WriteLine("================================");
@@ -49,11 +55,6 @@ namespace OSPC
                 ShowHelp(p);
                 return;
             }
-
-            var tokenizer = new Tokenizer.CLikeTokenizer();
-            var comparer = new Comparer(cfg);
-            var friendfinder = new FriendFinder(cfg);
-            var result = new OSPCResult();
 
             Submission[] files = CollectFiles(cfg, tokenizer);
 
@@ -137,7 +138,7 @@ namespace OSPC
             Console.WriteLine("  finished in total {0:n2} sec.", watch.Elapsed.TotalSeconds);
         }
 
-        private static Submission[] CollectFiles(Configuration cfg, Tokenizer.CLikeTokenizer tokenizer)
+        private static Submission[] CollectFiles(Configuration cfg, Tokenizer.ITokenizer tokenizer)
         {
             if (cfg.Filter.Count == 0 && cfg.Dirs.Count > 0)
             {
