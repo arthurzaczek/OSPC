@@ -4,17 +4,19 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace OSPC
 {
+    [XmlRoot("OSPC")]
     public class Configuration
     {
         public Configuration()
         {
             Filter = new List<string>();
             Dirs = new List<string>();
-            Include = new List<Regex>();
-            Exclude = new List<Regex>();
+            Include = new List<string>();
+            Exclude = new List<string>();
         }
         /// <summary>
         /// Minimum count of matching tokens, including non-matching tokens.
@@ -34,12 +36,18 @@ namespace OSPC
         /// </summary>
         public double MIN_FRIEND_FINDER_SIMILARITY = -1;
 
-        public bool Verbose { get; internal set; }
+        [XmlIgnore]
+        public bool Verbose { get; set; }
 
+        [XmlIgnore]
         public List<string> Filter { get; private set; }
+        [XmlIgnore]
         public List<string> Dirs { get; private set; }
+        [XmlIgnore]
         public List<string> ExtraFiles { get; set; }
-        public List<Regex> Include { get; private set; }
-        public List<Regex> Exclude { get; private set; }
+        [XmlArray]
+        public List<string> Include { get; private set; }
+        [XmlArray]
+        public List<string> Exclude { get; private set; }
     }
 }

@@ -34,11 +34,13 @@ namespace OSPC
             var p = new OptionSet()
             {
                 { "h|?|help", "Prints this help", v => showHelp = true },
+                { "c=", "Reads the given configuration. Note, this switch should be the first argument as it overrides any other argument parsed yet.", v => cfg = LoadConfig(v) },
+                { "write-config=", "Write the current configuration to the given file. Note, this switch should be the last argument.", v => SaveConfig(cfg, v) },
 
                 { "f=", "File filter. If -d is specified, then -f defaults to \"*.*.\"", v => cfg.Filter.Add(v) },
                 { "d=", "Specifies a directory where the filer applies. If -f is specified, then -d defaults to \".\"", v => cfg.Dirs.Add(v) },
-                { "include=", "Specifies a regular expression that every file must match. More than one expression is allowed. A file must match any of these expressions.", v => cfg.Include.Add(new Regex(v)) },
-                { "exclude=", "Specifies a regular expression to exclude files. More than one expression is allowed. If a file must match any of these expressions it will be excluded.", v => cfg.Exclude.Add(new Regex(v)) },
+                { "include=", "Specifies a regular expression that every file must match. More than one expression is allowed. A file must match any of these expressions.", v => cfg.Include.Add(v) },
+                { "exclude=", "Specifies a regular expression to exclude files. More than one expression is allowed. If a file must match any of these expressions it will be excluded.", v => cfg.Exclude.Add(v) },
 
                 { "detailed", "Print a detailed report to the console", v => console = new Reporter.DetailedConsoleReporter() },
                 { "summary", "Print only a summay to the console. Usefull if --html is used.", v => console = new Reporter.SummaryConsoleReporter() },
@@ -141,6 +143,24 @@ namespace OSPC
             Console.WriteLine("  finished in total {0:n2} sec.", watch.Elapsed.TotalSeconds);
         }
 
+        private static void SaveConfig(Configuration cfg, string file)
+        {
+            using (var fs = new FileStream(file, FileMode.Create))
+            {
+                fs.SetLength(0);
+                cfg.ToXmlStream(fs);
+                fs.Flush();
+            }
+        }
+
+        private static Configuration LoadConfig(string file)
+        {
+            using (var fs = new FileStream(file, FileMode.Open))
+            {
+                return fs.FromXmlStream<Configuration>();
+            }
+        }
+
         private static Submission[] CollectFiles(Configuration cfg, Tokenizer.ITokenizer tokenizer)
         {
             if (cfg.Filter.Count == 0 && cfg.Dirs.Count > 0)
@@ -159,14 +179,16 @@ namespace OSPC
 
             if(cfg.Include.Count > 0)
             {
+                var tmp = cfg.Include.Select(i => new Regex(i)).ToList();
                 qry = qry
-                    .Where(f => cfg.Include.Any(r => r.Match(f).Success));
+                    .Where(f => tmp.Any(r => r.Match(f).Success));
             }
 
             if (cfg.Exclude.Count > 0)
             {
+                var tmp = cfg.Exclude.Select(i => new Regex(i)).ToList();
                 qry = qry
-                    .Where(f => !cfg.Exclude.Any(r => r.Match(f).Success));
+                    .Where(f => !tmp.Any(r => r.Match(f).Success));
             }
 
             var files = qry

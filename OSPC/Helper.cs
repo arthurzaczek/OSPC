@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace OSPC
 {
@@ -103,5 +105,37 @@ namespace OSPC
             return derv_2;
         }
 
+        /// <summary>
+        /// Converts a object to XML.
+        /// </summary>
+        /// <param name="obj">Any XML Serializable Object.</param>
+        /// <param name="s">Output stream</param>
+        public static void ToXmlStream(this object obj, Stream s)
+        {
+            if (obj == null) { throw new ArgumentNullException("obj"); }
+
+            XmlSerializer xml = new XmlSerializer(obj.GetType());
+            var sw = new StreamWriter(s);
+            xml.Serialize(sw, obj);
+            sw.Flush();
+        }
+
+        /// <summary>
+        /// Converts a XML byte array to a Objekt.
+        /// </summary>
+        /// <typeparam name="T">Type of the Object.</typeparam>
+        /// <param name="stream">Input stream.</param>
+        /// <returns>Returns a Object or throws an XML-Exception (see MSDN, XmlSerializer)</returns>
+        public static T FromXmlStream<T>(this System.IO.Stream stream)
+            where T : new()
+        {
+            if (stream == null) throw new ArgumentNullException("stream");
+
+            using (var sr = new StreamReader(stream))
+            {
+                var xml = new XmlSerializer(typeof(T));
+                return (T)xml.Deserialize(sr);
+            }
+        }
     }
 }
