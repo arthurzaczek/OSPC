@@ -35,6 +35,6 @@ namespace OSPC
 
         public List<string> Filter { get; private set; }
         public List<string> Dirs { get; private set; }
-
+        public List<string> ExtraFiles { get; set; }
     }
 }

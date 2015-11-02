@@ -42,7 +42,7 @@ namespace OSPC
                 { "v|verbose", "Verbose output.", v =>  cfg.Verbose = true },
             };
 
-            var extra = p.Parse(args);
+            cfg.ExtraFiles = p.Parse(args);
 
             if (showHelp)
             {
@@ -50,41 +50,12 @@ namespace OSPC
                 return;
             }
 
-            if (cfg.Filter.Count == 0 && cfg.Dirs.Count > 0)
-            {
-                cfg.Filter.Add("*.*");
-            }
-            if (cfg.Dirs.Count == 0 && cfg.Filter.Count > 0)
-            {
-                cfg.Dirs.Add(".");
-            }
-
             var tokenizer = new Tokenizer.CLikeTokenizer();
             var comparer = new Comparer(cfg);
             var friendfinder = new FriendFinder(cfg);
             var result = new OSPCResult();
 
-            var files = cfg.Dirs
-                .SelectMany(d => cfg.Filter.Select(f => new Tuple<string, string>(d, f))) // TODO: Change to Submission!
-                .SelectMany(t => Directory.GetFiles(t.Item1, t.Item2))
-                .Concat(extra)
-                .Select(f =>
-                {
-                    var s = new Submission(f, tokenizer);
-                    s.Parse();
-                    return s;
-                })
-                .ToArray();
-
-            if (cfg.Verbose)
-            {
-                Console.WriteLine("Files:");
-                foreach (var f in files)
-                {
-                    Console.WriteLine(f.FilePath);
-                }
-                Console.WriteLine();
-            }
+            Submission[] files = CollectFiles(cfg, tokenizer);
 
             var compareList = new List<Tuple<Submission, Submission>>();
             for (int a = 0; a < files.Length; a++)
@@ -164,6 +135,42 @@ namespace OSPC
             console.Create(result);
 
             Console.WriteLine("  finished in total {0:n2} sec.", watch.Elapsed.TotalSeconds);
+        }
+
+        private static Submission[] CollectFiles(Configuration cfg, Tokenizer.CLikeTokenizer tokenizer)
+        {
+            if (cfg.Filter.Count == 0 && cfg.Dirs.Count > 0)
+            {
+                cfg.Filter.Add("*.*");
+            }
+            if (cfg.Dirs.Count == 0 && cfg.Filter.Count > 0)
+            {
+                cfg.Dirs.Add(".");
+            }
+
+            var files = cfg.Dirs
+                .SelectMany(d => cfg.Filter.Select(f => new Tuple<string, string>(d, f))) // TODO: Change to Submission!
+                .SelectMany(t => Directory.GetFiles(t.Item1, t.Item2))
+                .Concat(cfg.ExtraFiles)
+                .Select(f =>
+                {
+                    var s = new Submission(f, tokenizer);
+                    s.Parse();
+                    return s;
+                })
+                .ToArray();
+
+            if (cfg.Verbose)
+            {
+                Console.WriteLine("Files:");
+                foreach (var f in files)
+                {
+                    Console.WriteLine(f.FilePath);
+                }
+                Console.WriteLine();
+            }
+
+            return files;
         }
 
         private static void ShowHelp(OptionSet p)
