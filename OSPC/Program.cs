@@ -40,6 +40,8 @@ namespace OSPC
                 { "min-match-length=", "Minimum count of matching tokens, including non-matching tokens.", v => cfg.MIN_MATCH_LENGTH = int.Parse(v) },
                 { "max-match-distance=", "Maximum distance between tokens to count as a match. 1 = exact match.", v => cfg.MAX_MATCH_DISTANCE = int.Parse(v) },
                 { "min-common-token=", "Percent of token that must match to count as a match. 1 = every token must match.", v =>  cfg.MIN_COMMON_TOKEN = double.Parse(v) },
+
+                { "v|verbose", "Verbose output.", v =>  cfg.Verbose = true },
             };
 
             var extra = p.Parse(args);
@@ -75,6 +77,16 @@ namespace OSPC
                     return s;
                 })
                 .ToArray();
+
+            if (cfg.Verbose)
+            {
+                Console.WriteLine("Files:");
+                foreach (var f in files)
+                {
+                    Console.WriteLine(f.FilePath);
+                }
+                Console.WriteLine();
+            }
 
             var compareList = new List<Tuple<Submission, Submission>>();
             for (int a = 0; a < files.Length; a++)
