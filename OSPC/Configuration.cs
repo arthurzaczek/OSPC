@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace OSPC
@@ -12,6 +13,8 @@ namespace OSPC
         {
             Filter = new List<string>();
             Dirs = new List<string>();
+            Include = new List<Regex>();
+            Exclude = new List<Regex>();
         }
         /// <summary>
         /// Minimum count of matching tokens, including non-matching tokens.
@@ -36,5 +39,7 @@ namespace OSPC
         public List<string> Filter { get; private set; }
         public List<string> Dirs { get; private set; }
         public List<string> ExtraFiles { get; set; }
+        public List<Regex> Include { get; private set; }
+        public List<Regex> Exclude { get; private set; }
     }
 }

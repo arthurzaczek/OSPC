@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace OSPC
@@ -36,6 +37,8 @@ namespace OSPC
 
                 { "f=", "File filter. If -d is specified, then -f defaults to \"*.*.\"", v => cfg.Filter.Add(v) },
                 { "d=", "Specifies a directory where the filer applies. If -f is specified, then -d defaults to \".\"", v => cfg.Dirs.Add(v) },
+                { "include=", "Specifies a regular expression that every file must match. More than one expression is allowed. A file must match any of these expressions.", v => cfg.Include.Add(new Regex(v)) },
+                { "exclude=", "Specifies a regular expression to exclude files. More than one expression is allowed. If a file must match any of these expressions it will be excluded.", v => cfg.Exclude.Add(new Regex(v)) },
 
                 { "detailed", "Print a detailed report to the console", v => console = new Reporter.DetailedConsoleReporter() },
                 { "summary", "Print only a summay to the console. Usefull if --html is used.", v => console = new Reporter.SummaryConsoleReporter() },
@@ -149,10 +152,24 @@ namespace OSPC
                 cfg.Dirs.Add(".");
             }
 
-            var files = cfg.Dirs
+            var qry = cfg.Dirs
                 .SelectMany(d => cfg.Filter.Select(f => new Tuple<string, string>(d, f))) // TODO: Change to Submission!
                 .SelectMany(t => Directory.GetFiles(t.Item1, t.Item2))
-                .Concat(cfg.ExtraFiles)
+                .Concat(cfg.ExtraFiles);
+
+            if(cfg.Include.Count > 0)
+            {
+                qry = qry
+                    .Where(f => cfg.Include.Any(r => r.Match(f).Success));
+            }
+
+            if (cfg.Exclude.Count > 0)
+            {
+                qry = qry
+                    .Where(f => !cfg.Exclude.Any(r => r.Match(f).Success));
+            }
+
+            var files = qry
                 .Select(f =>
                 {
                     var s = new Submission(f, tokenizer);
