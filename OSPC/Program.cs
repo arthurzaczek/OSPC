@@ -45,7 +45,7 @@ namespace OSPC
 
                 { "min-match-length=", "Minimum count of matching tokens, including non-matching tokens.", v => cfg.MIN_MATCH_LENGTH = int.Parse(v) },
                 { "max-match-distance=", "Maximum distance between tokens to count as a match. 1 = exact match.", v => cfg.MAX_MATCH_DISTANCE = int.Parse(v) },
-                { "min-common-token=", "Percent of token that must match to count as a match. 1 = every token must match.", v =>  cfg.MIN_COMMON_TOKEN = double.Parse(v) },
+                { "min-common-token=", "Percent of token that must match to count as a match. 1 = every token must match.", v => cfg.MIN_COMMON_TOKEN = double.Parse(v, System.Globalization.CultureInfo.InvariantCulture) },
 
                 { "v|verbose", "Verbose output.", v =>  cfg.Verbose = true },
             };
