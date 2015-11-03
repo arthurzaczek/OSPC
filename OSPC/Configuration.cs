@@ -21,15 +21,15 @@ namespace OSPC
         /// <summary>
         /// Minimum count of matching tokens, including non-matching tokens.
         /// </summary>
-        public int MIN_MATCH_LENGTH = 10;
+        public int MIN_MATCH_LENGTH = 1000;
         /// <summary>
         /// Maximum distance between tokens to count as a match. 1 = exact match.
         /// </summary>
-        public int MAX_MATCH_DISTANCE = 2;
+        public int MAX_MATCH_DISTANCE = 1;
         /// <summary>
         /// Percent of token that must match to count as a match. 1 = every token must match.
         /// </summary>
-        public double MIN_COMMON_TOKEN = 0.85;
+        public double MIN_COMMON_TOKEN = 1;
 
         /// <summary>
         /// Min. similarity of the other submission to count as contribution by a friend. if &lt; 0 then the value will be calculated automatically.
