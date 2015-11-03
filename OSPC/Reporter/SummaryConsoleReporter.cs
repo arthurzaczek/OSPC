@@ -11,8 +11,11 @@ namespace OSPC.Reporter
         public void Create(OSPCResult r)
         {
             Console.WriteLine("Resultset: {0}", r.Results.Count);
-            Console.WriteLine("Max Matches: {0}", r.Results.Max(m => m.MatchCount));
-            Console.WriteLine("Max Tokens: {0}", r.Results.Max(m => m.TokenCount));
+            if (r.Results.Count > 0)
+            {
+                Console.WriteLine("Max Matches: {0}", r.Results.Max(m => m.MatchCount));
+                Console.WriteLine("Max Tokens: {0}", r.Results.Max(m => m.TokenCount));
+            }
         }
     }
 }

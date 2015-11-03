@@ -123,16 +123,25 @@ namespace OSPC
             double[] lst;
 
             lst = result.Results.SelectMany(i => new[] { i.SimilarityA, i.SimilarityB }).OrderBy(i => i).ToArray();
-            result.AVG_Similarity = lst.Average();
-            result.POI_Similarity = lst[lst.CalcDerv2().MaxIndex()];
+            if (lst.Length > 0)
+            {
+                result.AVG_Similarity = lst.Average();
+                result.POI_Similarity = lst[lst.CalcDerv2().MaxIndex()];
+            }
 
             lst = result.Results.Select(i => (double)i.TokenCount).OrderBy(i => i).ToArray();
-            result.AVG_TokenCount = lst.Average();
-            result.POI_TokenCount = lst[lst.CalcDerv2().MaxIndex()];
+            if (lst.Length > 0)
+            {
+                result.AVG_TokenCount = lst.Average();
+                result.POI_TokenCount = lst[lst.CalcDerv2().MaxIndex()];
+            }
 
             lst = result.Results.Select(i => (double)i.TokenCount / (double)i.MatchCount).OrderBy(i => i).ToArray();
-            result.AVG_TokenPerMatch = lst.Average();
-            result.POI_TokenPerMatch = lst[lst.CalcDerv2().MaxIndex()];
+            if (lst.Length > 0)
+            {
+                result.AVG_TokenPerMatch = lst.Average();
+                result.POI_TokenPerMatch = lst[lst.CalcDerv2().MaxIndex()];
+            }
 
             if (cfg.MIN_FRIEND_FINDER_SIMILARITY < 0)
             {
