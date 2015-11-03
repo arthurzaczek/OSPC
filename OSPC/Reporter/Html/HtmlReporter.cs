@@ -56,7 +56,7 @@ namespace OSPC.Reporter.Html
                 WriteHeader(html, "OSPC - FriendFinder", new TupleList<string, string>() { { "index.html", "Results" } });
                 WriteFriendFinderTitle(html);
 
-                foreach(var f in r.Friends)
+                foreach (var f in r.Friends)
                 {
                     WriteFriendFinderLine(html, f);
                 }
@@ -107,12 +107,7 @@ namespace OSPC.Reporter.Html
             }
         }
 
-        private static string GetDetailFileName(CompareResult result)
-        {
-            return string.Format("{0}_{1}.html", Path.GetFileNameWithoutExtension(result.A.FilePath), Path.GetFileNameWithoutExtension(result.B.FilePath)).Replace(" ", "_");
-        }
-
-#region Graphs
+        #region Graphs
         private void CreateTokenGraph(OSPCResult r)
         {
             GraphPane g = new GraphPane(GraphRect, "Distribution of common token", "-", "# of token");
@@ -297,9 +292,9 @@ namespace OSPC.Reporter.Html
             g.XAxis.Title.FontSpec.Size = 18.0f;
             g.YAxis.Title.FontSpec.Size = 18.0f;
         }
-#endregion
+        #endregion
 
-#region Details
+        #region Details
         private void WriteDetail(CompareResult result, string diffName)
         {
             using (var html = new StreamWriter(Path.Combine(_outPath, diffName)))
@@ -388,9 +383,9 @@ namespace OSPC.Reporter.Html
                 }
             }
         }
-#endregion
+        #endregion
 
-#region Summay
+        #region Summay
         private static void WriteSummaryTitle(StreamWriter html)
         {
             html.WriteLine("<h1>Open Software Plagiarism Checker</h1>");
@@ -463,9 +458,9 @@ namespace OSPC.Reporter.Html
             html.WriteLine("<img src=\"PercentGraph.png\" />");
             html.WriteLine("</div>");
         }
-#endregion
+        #endregion
 
-#region FriendFinder
+        #region FriendFinder
         private static void WriteFriendFinderTitle(StreamWriter html)
         {
             html.WriteLine("<h1>OSPC - FriendFinder</h1>");
@@ -495,7 +490,7 @@ namespace OSPC.Reporter.Html
                 .OrderByDescending(i => f.Submission.FilePath == i.A.FilePath ? i.SimilarityB : i.SimilarityA);
             foreach (var match in lst)
             {
-                if(!first)
+                if (!first)
                 {
                     html.WriteLine(@"<tr class=""friend-table-detail-row"">
 <td class=""friend-group-col empty first""></td>
@@ -524,9 +519,14 @@ namespace OSPC.Reporter.Html
         {
             html.WriteLine("</table>");
         }
-#endregion
+        #endregion
 
-#region Commmon
+        #region Commmon
+        private static string GetDetailFileName(CompareResult result)
+        {
+            return string.Format("{0}_{1}.html", Path.GetFileNameWithoutExtension(result.A.FilePath), Path.GetFileNameWithoutExtension(result.B.FilePath)).Replace(" ", "_");
+        }
+
         private static void WriteHeader(StreamWriter html, string title, TupleList<string, string> menu)
         {
             if (html == null) throw new ArgumentNullException("html");
@@ -542,7 +542,7 @@ namespace OSPC.Reporter.Html
 <body>", title);
 
             html.WriteLine(@"<ul id=""menu"">");
-            foreach(var item in menu)
+            foreach (var item in menu)
             {
                 html.WriteLine(@"<li class=""menu-item""><a class=""menu-link"" href=""{0}"">{1}</a></li>", item.Item1, item.Item2);
             }
@@ -561,6 +561,6 @@ namespace OSPC.Reporter.Html
         {
             html.WriteLine("</body></html>");
         }
-#endregion
+        #endregion
     }
 }
