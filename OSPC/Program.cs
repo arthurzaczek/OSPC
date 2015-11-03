@@ -19,13 +19,10 @@ namespace OSPC
             var cfg = new Configuration();
             bool showHelp = false;
 
+            // changable through config or arguments
             Reporter.IReporter html = null;
             Reporter.IReporter console = new Reporter.ConsoleReporter();
-
             Tokenizer.ITokenizer tokenizer = new Tokenizer.CLikeTokenizer();
-            var comparer = new Comparer(cfg);
-            var friendfinder = new FriendFinder(cfg);
-            var result = new OSPCResult();
 
             Console.WriteLine("Open Software Plagiarism Checker");
             Console.WriteLine("================================");
@@ -65,15 +62,17 @@ namespace OSPC
                 return;
             }
 
-            Submission[] files = CollectFiles(cfg, tokenizer);
-
+            var comparer = new Comparer(cfg);
+            var friendfinder = new FriendFinder(cfg);
+            var result = new OSPCResult();
             var compareList = new List<Tuple<Submission, Submission>>();
             var compareResult = new List<CompareResult>();
-
-            CreateCompareList(files, compareList);
-
             var watch = new Stopwatch();
+
             watch.Start();
+
+            var files = CollectFiles(cfg, tokenizer);
+            CreateCompareList(files, compareList);
 
             Console.Write("Comparing {0} files ", files.Length);
             Compare(comparer, compareList, compareResult);
