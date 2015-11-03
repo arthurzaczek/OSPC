@@ -35,12 +35,18 @@ namespace OSPC
             this.B = b;
             Matches = new List<Match>();
         }
-        public Submission A { get; set; }
-        public Submission B { get; set; }
+        public Submission A { get; private set; }
+        public Submission B { get; private set; }
 
+        public int Index { get; private set; }
         public List<Match> Matches { get; private set; }
 
-        public void Seal()
+        public void Seal(int index)
+        {
+            Index = index;
+        }
+
+        public void Update()
         {
             MatchCount = Matches.Count;
             TokenCount = Matches.Sum(m => m.TokensA.Count);
@@ -129,7 +135,7 @@ namespace OSPC
                     result.Matches.Add(match);
                 }
             }
-            result.Seal();
+            result.Update();
             return result;
         }
 

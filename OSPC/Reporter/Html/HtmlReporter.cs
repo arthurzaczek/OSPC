@@ -524,7 +524,7 @@ namespace OSPC.Reporter.Html
         #region Commmon
         private static string GetDetailFileName(CompareResult result)
         {
-            return string.Format("{0}_{1}.html", Path.GetFileNameWithoutExtension(result.A.FilePath), Path.GetFileNameWithoutExtension(result.B.FilePath)).Replace(" ", "_");
+            return string.Format("Match_{0:00000}.html", result.Index + 1);
         }
 
         private static void WriteHeader(StreamWriter html, string title, TupleList<string, string> menu)

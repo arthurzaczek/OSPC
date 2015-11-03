@@ -105,9 +105,15 @@ namespace OSPC
             Console.WriteLine("  finished; time: {0:n2} sec.", watch.Elapsed.TotalSeconds);
 
             Console.WriteLine("Creating statistics");
+
             result.Results = compareResult
                 .Where(r => r.MatchCount > 0)
                 .OrderByDescending(r => Math.Max(r.SimilarityA, r.SimilarityB))
+                .Select((item, idx) =>
+                {
+                    item.Seal(idx);
+                    return item;
+                })
                 .ToList();
 
             double[] lst;
