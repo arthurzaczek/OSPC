@@ -267,21 +267,29 @@ namespace OSPC
             Console.WriteLine();
             Console.WriteLine("Examples:");
             Console.WriteLine();
-            Console.WriteLine("  OSPC -d c:\\somedir -f *.c");
-            Console.WriteLine();
-            Console.WriteLine("    Checks all *.c files in somedir.");
-            Console.WriteLine();
-            Console.WriteLine("  OSPC c:\\somedir\\file1.c c:\\somedir\\file2.c");
-            Console.WriteLine();
-            Console.WriteLine("    Checks file1.c and file2.c using absolute paths.");
-            Console.WriteLine();
-            Console.WriteLine("  OSPC a.c b.c");
-            Console.WriteLine();
-            Console.WriteLine("    Checks file1.c and file2.c using relative paths.");
-            Console.WriteLine();
-            Console.WriteLine("  OSPC --summay --html -f *.c");
-            Console.WriteLine();
-            Console.WriteLine("    Checks all c-files in the current directory and output a html report to .\\report\\index.html.");
+            Console.WriteLine(@"  OSPC - d c:\somedir - f *.c
+
+    Checks all *.c files in somedir with the default settings.
+
+  OSPC c:\somedir\file1.c c:\somedir\file2.c
+
+    Checks file1.c and file2.c using absolute paths with the default settings.
+
+  OSPC a.c b.c
+
+    Checks file1.c and file2.c using relative paths with the default settings.
+
+  OSPC - c basic_profile.xml--summay--html - f *.c
+
+    Checks all c - files in the current directory and output a html report to.\report\index.html.
+
+   OSPC--write - config default.xml
+
+    Writes the default configuration to default.xml
+
+  OSPC--min - match - length = 100--max - match - distance = 2--min - common - token = 0.95--write - config basic.xml
+
+    Writes the current configuration to basic.xml");
         }
     }
 }

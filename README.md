@@ -14,10 +14,18 @@ Features
 Usage
 -----
 
+> Note! When you run the program the first time without a configuration or adapted set of Comparer settings you will only find exact matches that are longer than 1000 Tokens. Each programming course is different. You have to find the right values for your course.
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Usage: OSPC [options] { file1 file2 ... }
 
   -h, -?, --help             Prints this help
+  -c=VALUE                   Reads the given configuration. Note, this switch
+                               should be the first argument as it overrides any
+                               other argument parsed yet.
+  --write-config=VALUE       Write the current configuration to the given
+                               file. Note, this switch should be the last
+                               argument.
   -f=VALUE                   File filter. If -d is specified, then -f
                                defaults to "*.*."
   -d=VALUE                   Specifies a directory where the filer applies.
@@ -46,21 +54,30 @@ Usage: OSPC [options] { file1 file2 ... }
 
 Examples:
 
-  OSPC -d c:\somedir -f *.c
+  OSPC - d c:\somedir - f *.c
 
-    Checks all *.c files in somedir.
+    Checks all *.c files in somedir with the default settings.
 
   OSPC c:\somedir\file1.c c:\somedir\file2.c
 
-    Checks file1.c and file2.c using absolute paths.
+    Checks file1.c and file2.c using absolute paths with the default settings.
 
   OSPC a.c b.c
 
-    Checks file1.c and file2.c using relative paths.
+    Checks file1.c and file2.c using relative paths with the default settings.
 
-  OSPC --summay --html -f *.c
+  OSPC - c basic_profile.xml--summay--html - f *.c
 
-    Checks all c-files in the current directory and output a html report to .\report\index.html.
+    Checks all c - files in the current directory and output a html report to.\report\index.html.
+
+   OSPC--write - config default.xml
+
+    Writes the default configuration to default.xml
+
+  OSPC--min - match - length = 100--max - match - distance = 2--min - common - token = 0.95--write - config basic.xml
+
+    Writes the current configuration to basic.xml
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 How it works
