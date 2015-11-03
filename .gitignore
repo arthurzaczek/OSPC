@@ -8,3 +8,4 @@ TestResults
 *.csproj.user
 *.suo
 /packages
+/OSPC/test_profile.xml
