@@ -188,6 +188,7 @@ namespace OSPC
 
         private static void SaveConfig(Configuration cfg, string file)
         {
+            Console.WriteLine("Writing current configuration.\n");
             using (var fs = new FileStream(file, FileMode.Create))
             {
                 fs.SetLength(0);
