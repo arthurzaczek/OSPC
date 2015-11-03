@@ -68,6 +68,29 @@ namespace OSPC
             Submission[] files = CollectFiles(cfg, tokenizer);
 
             var compareList = new List<Tuple<Submission, Submission>>();
+            var compareResult = new List<CompareResult>();
+
+            CreateCompareList(files, compareList);
+
+            var watch = new Stopwatch();
+            watch.Start();
+
+            Console.Write("Comparing {0} files ", files.Length);
+            Compare(comparer, compareList, compareResult);
+            Console.WriteLine("  finished; time: {0:n2} sec.", watch.Elapsed.TotalSeconds);
+
+            Console.WriteLine("Creating statistics");
+            CalcStatistics(result, compareResult);
+            StartFriendFinder(cfg, friendfinder, result, compareResult);
+            Console.WriteLine("  finished; time: {0:n2} sec.", watch.Elapsed.TotalSeconds);
+
+            Console.WriteLine("Creating reports");
+            CreateReports(html, console, result);
+            Console.WriteLine("  finished in total {0:n2} sec.", watch.Elapsed.TotalSeconds);
+        }
+
+        private static void CreateCompareList(Submission[] files, List<Tuple<Submission, Submission>> compareList)
+        {
             for (int a = 0; a < files.Length; a++)
             {
                 for (int b = a + 1; b < files.Length; b++)
@@ -77,13 +100,10 @@ namespace OSPC
                     compareList.Add(new Tuple<Submission, Submission>(files[a], files[b]));
                 }
             }
+        }
 
-            var compareResult = new List<CompareResult>();
-
-            Console.Write("Comparing {0} files ", files.Length);
-
-            var watch = new Stopwatch();
-            watch.Start();
+        private static void Compare(Comparer comparer, List<Tuple<Submission, Submission>> compareList, List<CompareResult> compareResult)
+        {
             int progressCounter = 0;
             object _lock = new object();
 
@@ -105,11 +125,29 @@ namespace OSPC
             );
 #endif
             Console.WriteLine();
+        }
 
-            Console.WriteLine("  finished; time: {0:n2} sec.", watch.Elapsed.TotalSeconds);
+        private static void CreateReports(Reporter.IReporter html, Reporter.IReporter console, OSPCResult result)
+        {
+            if (html != null)
+            {
+                html.Create(result);
+            }
+            console.Create(result);
+        }
 
-            Console.WriteLine("Creating statistics");
+        private static void StartFriendFinder(Configuration cfg, FriendFinder friendfinder, OSPCResult result, List<CompareResult> compareResult)
+        {
+            if (cfg.MIN_FRIEND_FINDER_SIMILARITY < 0)
+            {
+                cfg.MIN_FRIEND_FINDER_SIMILARITY = result.POI_Similarity - 0.2;
+            }
 
+            result.Friends = friendfinder.Find(compareResult);
+        }
+
+        private static void CalcStatistics(OSPCResult result, List<CompareResult> compareResult)
+        {
             result.Results = compareResult
                 .Where(r => r.MatchCount > 0)
                 .OrderByDescending(r => Math.Max(r.SimilarityA, r.SimilarityB))
@@ -120,9 +158,7 @@ namespace OSPC
                 })
                 .ToList();
 
-            double[] lst;
-
-            lst = result.Results.SelectMany(i => new[] { i.SimilarityA, i.SimilarityB }).OrderBy(i => i).ToArray();
+            double[] lst = result.Results.SelectMany(i => new[] { i.SimilarityA, i.SimilarityB }).OrderBy(i => i).ToArray();
             if (lst.Length > 0)
             {
                 result.AVG_Similarity = lst.Average();
@@ -142,24 +178,6 @@ namespace OSPC
                 result.AVG_TokenPerMatch = lst.Average();
                 result.POI_TokenPerMatch = lst[lst.CalcDerv2().MaxIndex()];
             }
-
-            if (cfg.MIN_FRIEND_FINDER_SIMILARITY < 0)
-            {
-                cfg.MIN_FRIEND_FINDER_SIMILARITY = result.POI_Similarity - 0.2;
-            }
-
-            result.Friends = friendfinder.Find(compareResult);
-
-            Console.WriteLine("  finished; time: {0:n2} sec.", watch.Elapsed.TotalSeconds);
-
-            Console.WriteLine("Creating reports");
-            if (html != null)
-            {
-                html.Create(result);
-            }
-            console.Create(result);
-
-            Console.WriteLine("  finished in total {0:n2} sec.", watch.Elapsed.TotalSeconds);
         }
 
         private static void SaveConfig(Configuration cfg, string file)
