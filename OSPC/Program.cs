@@ -53,7 +53,11 @@ namespace OSPC
                 { "v|verbose", "Verbose output.", v =>  cfg.Verbose = true },
             };
 
-            cfg.ExtraFiles = p.Parse(args);
+            var extraFiles = p.Parse(args);
+            // split that, as during parse the reference of cfg may change. 
+            // The compiler might save the reference to the old, overridden 
+            // config instance.
+            cfg.ExtraFiles = extraFiles;
 
             if (showHelp)
             {
