@@ -72,20 +72,27 @@ namespace OSPC
             watch.Start();
 
             var files = CollectFiles(cfg, tokenizer);
-            CreateCompareList(files, compareList);
+            if (files.Length == 0)
+            {
+                Console.WriteLine("No files found to compare!");
+            }
+            else
+            {
+                CreateCompareList(files, compareList);
 
-            Console.Write("Comparing {0} files ", files.Length);
-            Compare(comparer, compareList, compareResult);
-            Console.WriteLine("  finished; time: {0:n2} sec.", watch.Elapsed.TotalSeconds);
+                Console.Write("Comparing {0} files ", files.Length);
+                Compare(comparer, compareList, compareResult);
+                Console.WriteLine("  finished; time: {0:n2} sec.", watch.Elapsed.TotalSeconds);
 
-            Console.WriteLine("Creating statistics");
-            CalcStatistics(result, compareResult);
-            StartFriendFinder(cfg, friendfinder, result, compareResult);
-            Console.WriteLine("  finished; time: {0:n2} sec.", watch.Elapsed.TotalSeconds);
+                Console.WriteLine("Creating statistics");
+                CalcStatistics(result, compareResult);
+                StartFriendFinder(cfg, friendfinder, result, compareResult);
+                Console.WriteLine("  finished; time: {0:n2} sec.", watch.Elapsed.TotalSeconds);
 
-            Console.WriteLine("Creating reports");
-            CreateReports(html, console, result);
-            Console.WriteLine("  finished in total {0:n2} sec.", watch.Elapsed.TotalSeconds);
+                Console.WriteLine("Creating reports");
+                CreateReports(html, console, result);
+                Console.WriteLine("  finished in total {0:n2} sec.", watch.Elapsed.TotalSeconds);
+            }
         }
 
         private static void CreateCompareList(Submission[] files, List<Tuple<Submission, Submission>> compareList)
