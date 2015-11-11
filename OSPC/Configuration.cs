@@ -45,9 +45,9 @@ namespace OSPC
         public List<string> Dirs { get; private set; }
         [XmlIgnore]
         public List<string> ExtraFiles { get; set; }
-        [XmlArray]
+        [XmlElement]
         public List<string> Include { get; private set; }
-        [XmlArray]
+        [XmlElement]
         public List<string> Exclude { get; private set; }
     }
 }
