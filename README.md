@@ -1,4 +1,4 @@
-﻿Open Software Plagiarism Checker
+Open Software Plagiarism Checker
 ================================
 
 A open source software plagiarism checker. It checks the similarity of individual files and generates various types of reports. Also it is able to find groups of similar submissions.
@@ -54,7 +54,7 @@ Usage: OSPC [options] { file1 file2 ... }
 
 Examples:
 
-  OSPC - d c:\somedir - f *.c
+  OSPC -d c:\somedir -f *.c
 
     Checks all *.c files in somedir with the default settings.
 
@@ -66,15 +66,15 @@ Examples:
 
     Checks file1.c and file2.c using relative paths with the default settings.
 
-  OSPC - c basic_profile.xml--summay--html - f *.c
+  OSPC -c basic_profile.xml --summay --html -f *.c
 
     Checks all c - files in the current directory and output a html report to.\report\index.html.
 
-   OSPC--write - config default.xml
+   OSPC --write-config default.xml
 
     Writes the default configuration to default.xml
 
-  OSPC--min - match - length = 100--max - match - distance = 2--min - common - token = 0.95--write - config basic.xml
+  OSPC --min-match-length=100 --max-match-distance=2 --min-common-token=0.95 --write-config basic.xml
 
     Writes the current configuration to basic.xml
 

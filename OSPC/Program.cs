@@ -279,15 +279,15 @@ namespace OSPC
 
     Checks file1.c and file2.c using relative paths with the default settings.
 
-  OSPC - c basic_profile.xml--summay--html - f *.c
+  OSPC -c basic_profile.xml --summay --html -f *.c
 
     Checks all c - files in the current directory and output a html report to.\report\index.html.
 
-   OSPC--write - config default.xml
+   OSPC --write-config default.xml
 
     Writes the default configuration to default.xml
 
-  OSPC--min - match - length = 100--max - match - distance = 2--min - common - token = 0.95--write - config basic.xml
+  OSPC --min-match-length=100 --max-match-distance=2 --min-common-token=0.95 --write-config basic.xml
 
     Writes the current configuration to basic.xml");
         }
