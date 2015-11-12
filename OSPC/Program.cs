@@ -38,6 +38,9 @@ namespace OSPC
                 { "d=", "Specifies a directory where the filer applies. If -f is specified, then -d defaults to \".\"", v => cfg.Dirs.Add(v) },
                 { "include=", "Specifies a regular expression that every file must match. More than one expression is allowed. A file must match any of these expressions.", v => cfg.Include.Add(v) },
                 { "exclude=", "Specifies a regular expression to exclude files. More than one expression is allowed. If a file must match any of these expressions it will be excluded.", v => cfg.Exclude.Add(v) },
+                { "recurse", "Traversals all directories recurse. Use include-dir and exclude-dir to have more control over the selected directories.", v => cfg.Recurse = true },
+                { "include-dir=", "Specifies a regular expression that every file must match. More than one expression is allowed. A file must match any of these expressions.", v => cfg.IncludeDir.Add(v) },
+                { "exclude-dir=", "Specifies a regular expression to exclude files. More than one expression is allowed. If a file must match any of these expressions it will be excluded.", v => cfg.ExcludeDir.Add(v) },
 
                 { "detailed", "Print a detailed report to the console", v => console = new Reporter.DetailedConsoleReporter() },
                 { "summary", "Print only a summay to the console. Usefull if --html is used.", v => console = new Reporter.SummaryConsoleReporter() },
@@ -216,45 +219,61 @@ namespace OSPC
                 cfg.Dirs.Add(".");
             }
 
-            var qry = cfg.Dirs
-                .SelectMany(d => cfg.Filter.Select(f => new Tuple<string, string>(d, f))) // TODO: Change to Submission!
-                .SelectMany(t => Directory.GetFiles(t.Item1, t.Item2))
-                .Concat(cfg.ExtraFiles);
+            var files = new List<string>();
+            var include = cfg.Include.Select(i => new Regex(i)).ToList();
+            var exclude = cfg.Exclude.Select(i => new Regex(i)).ToList();
+            var includeDir = cfg.IncludeDir.Select(i => new Regex(i)).ToList();
+            var excludeDir = cfg.ExcludeDir.Select(i => new Regex(i)).ToList();
 
-            if(cfg.Include.Count > 0)
-            {
-                var tmp = cfg.Include.Select(i => new Regex(i)).ToList();
-                qry = qry
-                    .Where(f => tmp.Any(r => r.Match(f).Success));
+            foreach(var dir in cfg.Dirs)
+            { 
+                CollectFilesRecurse(files, Directory.GetDirectories(dir), cfg.Filter, include, exclude, includeDir, excludeDir, cfg.Recurse);
             }
 
-            if (cfg.Exclude.Count > 0)
-            {
-                var tmp = cfg.Exclude.Select(i => new Regex(i)).ToList();
-                qry = qry
-                    .Where(f => !tmp.Any(r => r.Match(f).Success));
-            }
-
-            var files = qry
-                .Select(f =>
-                {
-                    var s = new Submission(f, tokenizer);
-                    s.Parse();
-                    return s;
-                })
-                .ToArray();
+            files.AddRange(cfg.ExtraFiles);
 
             if (cfg.Verbose)
             {
                 Console.WriteLine("Files:");
                 foreach (var f in files)
                 {
-                    Console.WriteLine(f.FilePath);
+                    Console.WriteLine(f);
                 }
                 Console.WriteLine();
             }
 
-            return files;
+            return files
+                    .Select(f =>
+                    {
+                        var s = new Submission(f, tokenizer);
+                        s.Parse();
+                        return s;
+                    })
+                    .ToArray();
+        }
+
+        private static void CollectFilesRecurse(List<string> files, IEnumerable<string> directories, IEnumerable<string> filters, IEnumerable<Regex> include, IEnumerable<Regex> exclude, IEnumerable<Regex> includeDir, IEnumerable<Regex> excludeDir, bool recurse)
+        {
+            foreach(var dir in directories)
+            {
+                if (includeDir.Any() && !includeDir.Any(r => r.Match(dir).Success)) continue;
+                if (excludeDir.Any() && excludeDir.Any(r => r.Match(dir).Success)) continue;
+
+                foreach (var pattern in filters)
+                {
+                    foreach(var f in Directory.GetFiles(dir, pattern))
+                    {
+                        if (include.Any() && !include.Any(r => r.Match(f).Success)) continue;
+                        if (exclude.Any() && exclude.Any(r => r.Match(f).Success)) continue;
+                        files.Add(f);
+                    }
+                }
+
+                if(recurse)
+                {
+                    CollectFilesRecurse(files, Directory.GetDirectories(dir), filters, include, exclude, includeDir, excludeDir, recurse);
+                }
+            }
         }
 
         private static void ShowHelp(OptionSet p)

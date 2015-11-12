@@ -17,6 +17,8 @@ namespace OSPC
             Dirs = new List<string>();
             Include = new List<string>();
             Exclude = new List<string>();
+            IncludeDir = new List<string>();
+            ExcludeDir = new List<string>();
         }
         /// <summary>
         /// Minimum count of matching tokens, including non-matching tokens.
@@ -44,10 +46,16 @@ namespace OSPC
         [XmlIgnore]
         public List<string> Dirs { get; private set; }
         [XmlIgnore]
+        public bool Recurse { get; set; }
+        [XmlIgnore]
         public List<string> ExtraFiles { get; set; }
         [XmlElement]
         public List<string> Include { get; private set; }
         [XmlElement]
         public List<string> Exclude { get; private set; }
+        [XmlElement]
+        public List<string> IncludeDir { get; private set; }
+        [XmlElement]
+        public List<string> ExcludeDir { get; private set; }
     }
 }
