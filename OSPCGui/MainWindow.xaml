@@ -51,16 +51,26 @@
                              HorizontalAlignment="Stretch"/>
             <StackPanel DockPanel.Dock="Top"
                         Margin="5">
-                <Label>Min match length:</Label>
-                <TextBox Text="{Binding Configuration.MIN_MATCH_LENGTH, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                <Label>Max match distance:</Label>
-                <TextBox Text="{Binding Configuration.MAX_MATCH_DISTANCE, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <Label>Min match length (1 - ):</Label>
+                <TextBox Text="{Binding Configuration.MIN_MATCH_LENGTH, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         ToolTip="Minimum count of matching tokens, including non-matching tokens."/>
+                
+                <Label>Max match distance (1 - ):</Label>
+                <TextBox Text="{Binding Configuration.MAX_MATCH_DISTANCE, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         ToolTip="Maximum distance between tokens to count as a match. 1 = exact match."/>
+                
                 <Label>Min quotient of common token (0.00 - 1.00):</Label>
-                <TextBox Text="{Binding Configuration.MIN_COMMON_TOKEN, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" />
-                <Label>Min friend finder similarity:</Label>
-                <TextBox Text="{Binding Configuration.MIN_FRIEND_FINDER_SIMILARITY, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                <Label>HTML report path</Label>
-                <TextBox Text="{Binding HtmlReportPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBox Text="{Binding Configuration.MIN_COMMON_TOKEN, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}"
+                         ToolTip="Quotient of token that must match to count as a match. 1 = every token must match."/>
+
+                <Label>Min friend finder similarity (-1, 0.00 - 1.00):</Label>
+                <TextBox Text="{Binding Configuration.MIN_FRIEND_FINDER_SIMILARITY, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         ToolTip="Min. similarity (quotient) of the other submission to count as contribution by a friend. if &lt; 0 then the value will be calculated automatically."/>
+                
+                <Label>HTML report path:</Label>
+                <TextBox Text="{Binding HtmlReportPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                         ToolTip="Path to the HTML report output directory."/>
+                
                 <ctrls:CommandButton DockPanel.Dock="Right" 
                                      HorizontalAlignment="Left"
                                      Margin="0,20,0,0"
