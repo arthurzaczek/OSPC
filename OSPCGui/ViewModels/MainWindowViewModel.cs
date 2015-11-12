@@ -186,12 +186,25 @@ namespace OSPCGui.ViewModels
             }
         }
 
-        private ObservableCollection<SubmissionViewModel> _submissions = new ObservableCollection<SubmissionViewModel>();
+        private ObservableCollection<SubmissionViewModel> _submissions;
         public ObservableCollection<SubmissionViewModel> Submissions
         {
             get
             {
+                if(_submissions == null)
+                {
+                    _submissions = new ObservableCollection<SubmissionViewModel>();
+                    _submissions.CollectionChanged += (s, e) => OnPropertyChanged("SubmissionCountAsText");
+                }
                 return _submissions;
+            }
+        }
+
+        public string SubmissionCountAsText
+        {
+            get
+            {
+                return string.Format("{0} files", Submissions.Count);
             }
         }
 

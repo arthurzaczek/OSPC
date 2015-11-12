@@ -26,6 +26,9 @@
                 <ctrls:CommandButton CommandViewModel="{Binding RemoveFilesCommand}"
                                      Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" />
             </ToolBar>
+            <TextBlock DockPanel.Dock="Bottom" 
+                       Text="{Binding SubmissionCountAsText}"
+                       Margin="5"/>
             <ctrls:ListView ItemsSource="{Binding Submissions}"
                             SelectedViewModels="{Binding SelectedSubmissions}"
                             HorizontalAlignment="Stretch"/>
