@@ -39,19 +39,15 @@
 
 
         <DockPanel Grid.Column="2">
-            <DockPanel DockPanel.Dock="Bottom">
-                <ctrls:CommandButton DockPanel.Dock="Right" 
-                                     HorizontalAlignment="Right"
-                                     Margin="5"
-                                     CommandViewModel="{Binding CheckCommand}" />
-                <ProgressBar Value="{Binding Progress}" 
+            <ProgressBar DockPanel.Dock="Bottom"
+                             Value="{Binding Progress}" 
                              Minimum="0" 
                              Maximum="100"
                              Margin="5"
                              Height="25"
                              HorizontalAlignment="Stretch"/>
-            </DockPanel>
-            <StackPanel Margin="5">
+            <StackPanel DockPanel.Dock="Top"
+                        Margin="5">
                 <Label>Min match length:</Label>
                 <TextBox Text="{Binding Configuration.MIN_MATCH_LENGTH, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 <Label>Max match distance:</Label>
@@ -62,7 +58,23 @@
                 <TextBox Text="{Binding Configuration.MIN_FRIEND_FINDER_SIMILARITY, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 <Label>HTML report path</Label>
                 <TextBox Text="{Binding HtmlReportPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <ctrls:CommandButton DockPanel.Dock="Right" 
+                                     HorizontalAlignment="Left"
+                                     Margin="0,20,0,0"
+                                     Width="150"
+                                     Height="30"
+                                     CommandViewModel="{Binding CheckCommand}" />
             </StackPanel>
+            <ListBox ItemsSource="{Binding Messages}"
+                     x:Name="lstMessages"
+                     Margin="5">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}"
+                                   FontFamily="Courier New" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
         </DockPanel>
     </Grid>
 </Window>

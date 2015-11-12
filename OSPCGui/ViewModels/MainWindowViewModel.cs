@@ -7,11 +7,14 @@ using OSPC;
 using System.Collections.ObjectModel;
 using Microsoft.Win32;
 using OSPC.Tokenizer;
+using System.Diagnostics;
 
 namespace OSPCGui.ViewModels
 {
     public class MainWindowViewModel : ViewModel, IProgressReporter
     {
+        private readonly System.Windows.Threading.Dispatcher _uiDispatcher = System.Windows.Threading.Dispatcher.CurrentDispatcher;
+
         public MainWindowViewModel()
         {
             this.Configuration = new OSPC.Configuration();
@@ -48,15 +51,24 @@ namespace OSPCGui.ViewModels
             {
                 await Task.Run(() =>
                 {
+                    var watch = Stopwatch.StartNew();
                     var comparer = new Comparer(Configuration, (IProgressReporter)this);
+
+                    AddMessage(string.Format("Comparing {0} files ", Submissions.Count));
                     var compareResult = comparer.Compare(Submissions.Select(i => i.Submission).ToArray());
+                    AddMessage(string.Format("  finished; time: {0:n2} sec.", watch.Elapsed.TotalSeconds));
+
+                    AddMessage("Creating statistics");
                     var result = OSPCResult.Create(compareResult);
                     var friends = new OSPC.FriendFinder(Configuration);
                     friends.Find(result, compareResult);
+                    AddMessage(string.Format("  finished; time: {0:n2} sec.", watch.Elapsed.TotalSeconds));
 
+                    AddMessage("Creating reports");
                     var html = new OSPC.Reporter.Html.HtmlReporter(HtmlReportPath, (IProgressReporter)this);
                     html.Create(result);
                     System.Diagnostics.Process.Start(System.IO.Path.Combine(html.OutPath, "index.html"));
+                    AddMessage(string.Format("  finished in total {0:n2} sec.", watch.Elapsed.TotalSeconds));
 
                     SaveUserSettings();
                 });
@@ -65,7 +77,7 @@ namespace OSPCGui.ViewModels
             {
                 IsRunning = false;
             }
-        }
+        }              
         #endregion
 
         #region UserSettings
@@ -190,6 +202,20 @@ namespace OSPCGui.ViewModels
             {
                 return _selectedSubmissions;
             }
+        }
+
+        private ObservableCollection<string> _messages = new ObservableCollection<string>();
+        public ObservableCollection<string> Messages
+        {
+            get
+            {
+                return _messages;
+            }
+        }
+
+        private void AddMessage(string msg)
+        {
+            _uiDispatcher.Invoke(() => { Messages.Add(msg); });
         }
 
         public ITokenizer Tokenizer { get; private set; }

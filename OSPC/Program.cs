@@ -68,9 +68,7 @@ namespace OSPC
 
             var comparer = new Comparer(cfg, progress);
             var friendfinder = new FriendFinder(cfg);
-            var watch = new Stopwatch();
-
-            watch.Start();
+            var watch = Stopwatch.StartNew();
 
             Console.WriteLine("Collecting files");
             var files = CollectFiles(cfg, tokenizer);
