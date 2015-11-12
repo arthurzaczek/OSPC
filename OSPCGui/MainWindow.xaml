@@ -1,0 +1,60 @@
+﻿<Window x:Class="OSPCGui.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:OSPCGui"
+        xmlns:ctrls="clr-namespace:OSPCGui.Controls"
+        xmlns:commands="clr-namespace:OSPCGui.Commands"
+        mc:Ignorable="d"
+        Title="Open Software Plagiarism Checker" 
+        Width="800"
+        Height="600" 
+        commands:SmartRoutedUICommand.IsCommandSink="true">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <DockPanel Grid.Column="0" 
+                   MinWidth="250">
+            <ToolBar DockPanel.Dock="Top">
+                <ctrls:CommandButton CommandViewModel="{Binding AddFilesCommand}"
+                                     Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" />
+                <ctrls:CommandButton CommandViewModel="{Binding RemoveFilesCommand}"
+                                     Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" />
+            </ToolBar>
+            <ctrls:ListView ItemsSource="{Binding Submissions}"
+                            SelectedViewModels="{Binding SelectedSubmissions}"
+                            HorizontalAlignment="Stretch"/>
+        </DockPanel>
+
+        <GridSplitter Grid.Column="1" 
+                      Width="5" 
+                      HorizontalAlignment="Center" 
+                      ResizeBehavior="PreviousAndNext" 
+                      VerticalAlignment="Stretch" />
+
+
+        <DockPanel Grid.Column="2">
+            <ctrls:CommandButton DockPanel.Dock="Bottom" 
+                                 HorizontalAlignment="Right"
+                                 Margin="5"
+                                 CommandViewModel="{Binding CheckCommand}" />
+            <StackPanel Margin="5">
+                <Label>Min match length:</Label>
+                <TextBox Text="{Binding Configuration.MIN_MATCH_LENGTH, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <Label>Max match distance:</Label>
+                <TextBox Text="{Binding Configuration.MAX_MATCH_DISTANCE, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <Label>Min quotient of common token (0.00 - 1.00):</Label>
+                <TextBox Text="{Binding Configuration.MIN_COMMON_TOKEN, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" />
+                <Label>Min friend finder similarity:</Label>
+                <TextBox Text="{Binding Configuration.MIN_FRIEND_FINDER_SIMILARITY, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <Label>HTML report path</Label>
+                <TextBox Text="{Binding HtmlReportPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+        </DockPanel>
+    </Grid>
+</Window>

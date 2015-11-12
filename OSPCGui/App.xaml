@@ -1,0 +1,17 @@
+﻿<Application x:Class="OSPCGui.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:OSPCGui"
+             xmlns:converter="clr-namespace:OSPCGui.Converter"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <converter:BooleanToVisibilityHiddenConverter x:Key="BooleanToVisibilityHiddenConverter" />
+        <converter:BooleanToInvisibilityConverter x:Key="BooleanToInvisibilityConverter" />
+        <converter:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+        <converter:BooleanMultiselectToSelectionModeConverter x:Key="BooleanMultiselectToSelectionModeConverter" />
+        <converter:LighterShadeConverter x:Key="LighterShadeConverter" />
+        <converter:DarkerShadeConverter x:Key="DarkerShadeConverter" />
+        <converter:EmptyToCollapsedConverter x:Key="EmptyToCollapsedConverter" />
+    </Application.Resources>
+</Application>

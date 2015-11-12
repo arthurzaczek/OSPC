@@ -23,18 +23,18 @@ namespace OSPC.Reporter.Html
         };
         public static readonly RectangleF GraphRect = new RectangleF(0.0f, 0.0f, 512.0f, 256.0f);
 
-        private string _outPath;
+        public string OutPath { get; private set; }
 
         public HtmlReporter(string outPath = null)
         {
-            this._outPath = outPath.IfNullOrWhiteSpace(Path.Combine(".", "report"));
+            this.OutPath = outPath.IfNullOrWhiteSpace(Path.Combine(".", "report"));
         }
 
         public void Create(OSPCResult r)
         {
-            if (!Directory.Exists(_outPath))
+            if (!Directory.Exists(OutPath))
             {
-                Directory.CreateDirectory(_outPath);
+                Directory.CreateDirectory(OutPath);
             }
 
             CreateSummaryPage(r);
@@ -51,7 +51,7 @@ namespace OSPC.Reporter.Html
 
         private void CreateFriendFinderPage(OSPCResult r)
         {
-            using (var html = new StreamWriter(Path.Combine(_outPath, "friendfinder.html")))
+            using (var html = new StreamWriter(Path.Combine(OutPath, "friendfinder.html")))
             {
                 WriteHeader(html, "OSPC - FriendFinder", new TupleList<string, string>() { { "index.html", "Results" } });
                 WriteFriendFinderTitle(html);
@@ -91,7 +91,7 @@ namespace OSPC.Reporter.Html
 
         private void CreateSummaryPage(OSPCResult r)
         {
-            using (var html = new StreamWriter(Path.Combine(_outPath, "index.html")))
+            using (var html = new StreamWriter(Path.Combine(OutPath, "index.html")))
             {
                 WriteHeader(html, "OSPC", new TupleList<string, string>() { { "friendfinder.html", "Friend Finder" } });
                 WriteSummaryTitle(html);
@@ -137,7 +137,7 @@ namespace OSPC.Reporter.Html
             g.AxisChange();
             using (var img = g.GetImage())
             {
-                img.Save(Path.Combine(_outPath, "TokenGraph.png"), ImageFormat.Png);
+                img.Save(Path.Combine(OutPath, "TokenGraph.png"), ImageFormat.Png);
             }
         }
 
@@ -173,7 +173,7 @@ namespace OSPC.Reporter.Html
             g.AxisChange();
             using (var img = g.GetImage())
             {
-                img.Save(Path.Combine(_outPath, "TokenDetailGraph.png"), ImageFormat.Png);
+                img.Save(Path.Combine(OutPath, "TokenDetailGraph.png"), ImageFormat.Png);
             }
         }
 
@@ -206,7 +206,7 @@ namespace OSPC.Reporter.Html
             g.AxisChange();
             using (var img = g.GetImage(512, 256, 72.0f))
             {
-                img.Save(Path.Combine(_outPath, "PercentGraph.png"), ImageFormat.Png);
+                img.Save(Path.Combine(OutPath, "PercentGraph.png"), ImageFormat.Png);
             }
         }
         private void CreateTokenMatchGraph(OSPCResult r)
@@ -238,7 +238,7 @@ namespace OSPC.Reporter.Html
             g.AxisChange();
             using (var img = g.GetImage())
             {
-                img.Save(Path.Combine(_outPath, "TokenMatchGraph.png"), ImageFormat.Png);
+                img.Save(Path.Combine(OutPath, "TokenMatchGraph.png"), ImageFormat.Png);
             }
         }
 
@@ -297,7 +297,7 @@ namespace OSPC.Reporter.Html
         #region Details
         private void WriteDetail(CompareResult result, string diffName)
         {
-            using (var html = new StreamWriter(Path.Combine(_outPath, diffName)))
+            using (var html = new StreamWriter(Path.Combine(OutPath, diffName)))
             {
                 WriteHeader(html, diffName, new TupleList<string, string>() { { "index.html", "Results" }, { "friendfinder.html", "Friend Finder" } });
 
@@ -551,7 +551,7 @@ namespace OSPC.Reporter.Html
 
         private void WriteStylesheet()
         {
-            using (var sw = new StreamWriter(Path.Combine(_outPath, "style.css")))
+            using (var sw = new StreamWriter(Path.Combine(OutPath, "style.css")))
             {
                 sw.Write(Html.Resources.style);
             }

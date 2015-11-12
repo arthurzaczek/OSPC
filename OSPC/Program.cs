@@ -66,10 +66,7 @@ namespace OSPC
             }
 
             var comparer = new Comparer(cfg);
-            var friendfinder = new FriendFinder(cfg);
-            var result = new OSPCResult();
-            var compareList = new List<Tuple<Submission, Submission>>();
-            var compareResult = new List<CompareResult>();
+            var friendfinder = new FriendFinder(cfg);            
             var watch = new Stopwatch();
 
             watch.Start();
@@ -81,60 +78,20 @@ namespace OSPC
             }
             else
             {
-                CreateCompareList(files, compareList);
-
                 Console.Write("Comparing {0} files ", files.Length);
-                Compare(comparer, compareList, compareResult);
+                var compareResult = comparer.Compare(files);
                 Console.WriteLine("  finished; time: {0:n2} sec.", watch.Elapsed.TotalSeconds);
 
                 Console.WriteLine("Creating statistics");
-                CalcStatistics(result, compareResult);
-                StartFriendFinder(cfg, friendfinder, result, compareResult);
+                var result = OSPCResult.Create(compareResult);
+                friendfinder.Find(result, compareResult);
                 Console.WriteLine("  finished; time: {0:n2} sec.", watch.Elapsed.TotalSeconds);
 
                 Console.WriteLine("Creating reports");
                 CreateReports(html, console, result);
                 Console.WriteLine("  finished in total {0:n2} sec.", watch.Elapsed.TotalSeconds);
             }
-        }
-
-        private static void CreateCompareList(Submission[] files, List<Tuple<Submission, Submission>> compareList)
-        {
-            for (int a = 0; a < files.Length; a++)
-            {
-                for (int b = a + 1; b < files.Length; b++)
-                {
-                    if (Path.GetExtension(files[a].FilePath) != Path.GetExtension(files[b].FilePath)) continue;
-
-                    compareList.Add(new Tuple<Submission, Submission>(files[a], files[b]));
-                }
-            }
-        }
-
-        private static void Compare(Comparer comparer, List<Tuple<Submission, Submission>> compareList, List<CompareResult> compareResult)
-        {
-            int progressCounter = 0;
-            object _lock = new object();
-
-#if SINGLE_THREADED
-            foreach(var pair in compareList)
-#else
-            Parallel.ForEach(compareList, pair =>
-#endif
-            {
-                var r = comparer.Compare(pair.Item1, pair.Item2);
-
-                lock (_lock)
-                {
-                    compareResult.Add(r);
-                    if (++progressCounter % 100 == 0) Console.Write(".");
-                }
-            }
-#if !SINGLE_THREADED
-            );
-#endif
-            Console.WriteLine();
-        }
+        }        
 
         private static void CreateReports(Reporter.IReporter html, Reporter.IReporter console, OSPCResult result)
         {
@@ -143,50 +100,6 @@ namespace OSPC
                 html.Create(result);
             }
             console.Create(result);
-        }
-
-        private static void StartFriendFinder(Configuration cfg, FriendFinder friendfinder, OSPCResult result, List<CompareResult> compareResult)
-        {
-            if (cfg.MIN_FRIEND_FINDER_SIMILARITY < 0)
-            {
-                cfg.MIN_FRIEND_FINDER_SIMILARITY = result.POI_Similarity - 0.2;
-            }
-
-            result.Friends = friendfinder.Find(compareResult);
-        }
-
-        private static void CalcStatistics(OSPCResult result, List<CompareResult> compareResult)
-        {
-            result.Results = compareResult
-                .Where(r => r.MatchCount > 0)
-                .OrderByDescending(r => Math.Max(r.SimilarityA, r.SimilarityB))
-                .Select((item, idx) =>
-                {
-                    item.Seal(idx);
-                    return item;
-                })
-                .ToList();
-
-            double[] lst = result.Results.SelectMany(i => new[] { i.SimilarityA, i.SimilarityB }).OrderBy(i => i).ToArray();
-            if (lst.Length > 0)
-            {
-                result.AVG_Similarity = lst.Average();
-                result.POI_Similarity = lst[lst.CalcDerv2().MaxIndex()];
-            }
-
-            lst = result.Results.Select(i => (double)i.TokenCount).OrderBy(i => i).ToArray();
-            if (lst.Length > 0)
-            {
-                result.AVG_TokenCount = lst.Average();
-                result.POI_TokenCount = lst[lst.CalcDerv2().MaxIndex()];
-            }
-
-            lst = result.Results.Select(i => (double)i.TokenCount / (double)i.MatchCount).OrderBy(i => i).ToArray();
-            if (lst.Length > 0)
-            {
-                result.AVG_TokenPerMatch = lst.Average();
-                result.POI_TokenPerMatch = lst[lst.CalcDerv2().MaxIndex()];
-            }
         }
 
         private static void SaveConfig(Configuration cfg, string file)

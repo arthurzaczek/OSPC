@@ -1,6 +1,7 @@
 ﻿using OSPC.Tokenizer;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -67,6 +68,45 @@ namespace OSPC
         public Comparer(Configuration cfg)
         {
             this._cfg = cfg;
+        }
+
+        public List<CompareResult> Compare(Submission[] files)
+        {
+            var compareList = new List<Tuple<Submission, Submission>>();
+            for (int a = 0; a < files.Length; a++)
+            {
+                for (int b = a + 1; b < files.Length; b++)
+                {
+                    if (Path.GetExtension(files[a].FilePath) != Path.GetExtension(files[b].FilePath)) continue;
+
+                    compareList.Add(new Tuple<Submission, Submission>(files[a], files[b]));
+                }
+            }
+
+            int progressCounter = 0;
+            object _lock = new object();
+            var compareResult = new List<CompareResult>();
+
+#if SINGLE_THREADED
+            foreach(var pair in compareList)
+#else
+            Parallel.ForEach(compareList, pair =>
+#endif
+            {
+                var r = this.Compare(pair.Item1, pair.Item2);
+
+                lock (_lock)
+                {
+                    compareResult.Add(r);
+                    if (++progressCounter % 100 == 0) Console.Write(".");
+                }
+            }
+#if !SINGLE_THREADED
+            );
+#endif
+            Console.WriteLine();
+
+            return compareResult;
         }
 
         public CompareResult Compare(Submission a, Submission b)

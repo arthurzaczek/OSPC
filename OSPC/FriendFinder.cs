@@ -21,9 +21,9 @@ namespace OSPC
 
         public override string ToString()
         {
-            return string.Format("{0}; {1:n2}%; {2} Friends", 
-                Submission, 
-                100.0 * SumSimilarity, 
+            return string.Format("{0}; {1:n2}%; {2} Friends",
+                Submission,
+                100.0 * SumSimilarity,
                 InMatches.Count);
         }
     }
@@ -37,24 +37,30 @@ namespace OSPC
             this._cfg = cfg;
         }
 
-        public List<FriendOf> Find(List<CompareResult> results)
+        public void Find(OSPCResult result, List<CompareResult> compareResult)
         {
+            var min_friend_finder_similarity = _cfg.MIN_FRIEND_FINDER_SIMILARITY >= 0
+                ? _cfg.MIN_FRIEND_FINDER_SIMILARITY
+                : result.POI_Similarity - 0.2;
+
+
             var friends = new Dictionary<Submission, FriendOf>();
-            foreach(var result in results)
+            foreach (var cp in compareResult)
             {
-                ProcessMatch(friends, result, result.A, result.SimilarityB);
-                ProcessMatch(friends, result, result.B, result.SimilarityA);
+                ProcessMatch(friends, cp, cp.A, cp.SimilarityB, min_friend_finder_similarity);
+                ProcessMatch(friends, cp, cp.B, cp.SimilarityA, min_friend_finder_similarity);
             }
-            
-            return friends.Values
+
+            result.Friends = friends.Values
                 .Where(i => i.InMatches.Count > 1)
-                .OrderByDescending(i => i.SumSimilarity).ToList();
+                .OrderByDescending(i => i.SumSimilarity)
+                .ToList();
         }
 
-        private void ProcessMatch(Dictionary<Submission, FriendOf> friends, CompareResult result, Submission submission, double similarity)
+        private void ProcessMatch(Dictionary<Submission, FriendOf> friends, CompareResult result, Submission submission, double similarity, double min_friend_finder_similarity)
         {
             FriendOf f;
-            if (similarity > _cfg.MIN_FRIEND_FINDER_SIMILARITY)
+            if (similarity > min_friend_finder_similarity)
             {
                 if (!friends.TryGetValue(submission, out f))
                 {
