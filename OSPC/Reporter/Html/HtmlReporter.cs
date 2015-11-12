@@ -24,10 +24,12 @@ namespace OSPC.Reporter.Html
         public static readonly RectangleF GraphRect = new RectangleF(0.0f, 0.0f, 512.0f, 256.0f);
 
         public string OutPath { get; private set; }
+        private readonly IProgressReporter _progress;
 
-        public HtmlReporter(string outPath = null)
+        public HtmlReporter(string outPath, IProgressReporter progress)
         {
             this.OutPath = outPath.IfNullOrWhiteSpace(Path.Combine(".", "report"));
+            this._progress = progress;
         }
 
         public void Create(OSPCResult r)
@@ -69,7 +71,10 @@ namespace OSPC.Reporter.Html
 
         private void CreateDetailPages(OSPCResult r)
         {
-            int progressCounter = 0;
+            int counter = 0;
+            int max = r.Results.Count;
+            _progress.Start();
+
             object _lock = new object();
 #if SINGLE_THREADED
             foreach(var result in r.Results)
@@ -80,13 +85,13 @@ namespace OSPC.Reporter.Html
                 WriteDetail(result, GetDetailFileName(result));
                 lock (_lock)
                 {
-                    if (++progressCounter % 100 == 0) Console.Write(".");
+                    _progress.Progress((double)++counter / (double)max);
                 }
             }
 #if !SINGLE_THREADED
             );
 #endif
-            Console.WriteLine();
+            _progress.End();
         }
 
         private void CreateSummaryPage(OSPCResult r)

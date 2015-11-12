@@ -54,7 +54,7 @@ namespace OSPCGui.ViewModels
                     var friends = new OSPC.FriendFinder(Configuration);
                     friends.Find(result, compareResult);
 
-                    var html = new OSPC.Reporter.Html.HtmlReporter(HtmlReportPath);
+                    var html = new OSPC.Reporter.Html.HtmlReporter(HtmlReportPath, (IProgressReporter)this);
                     html.Create(result);
                     System.Diagnostics.Process.Start(System.IO.Path.Combine(html.OutPath, "index.html"));
 

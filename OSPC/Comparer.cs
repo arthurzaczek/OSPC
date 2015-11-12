@@ -106,8 +106,7 @@ namespace OSPC
                 lock (_lock)
                 {
                     compareResult.Add(r);
-                    counter++;
-                    _progress.Progress((double)counter / (double)max);
+                    _progress.Progress((double)++counter / (double)max);
                 }
             }
 #if !SINGLE_THREADED
