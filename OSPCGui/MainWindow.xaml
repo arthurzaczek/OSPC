@@ -39,10 +39,18 @@
 
 
         <DockPanel Grid.Column="2">
-            <ctrls:CommandButton DockPanel.Dock="Bottom" 
-                                 HorizontalAlignment="Right"
-                                 Margin="5"
-                                 CommandViewModel="{Binding CheckCommand}" />
+            <DockPanel DockPanel.Dock="Bottom">
+                <ctrls:CommandButton DockPanel.Dock="Right" 
+                                     HorizontalAlignment="Right"
+                                     Margin="5"
+                                     CommandViewModel="{Binding CheckCommand}" />
+                <ProgressBar Value="{Binding Progress}" 
+                             Minimum="0" 
+                             Maximum="100"
+                             Margin="5"
+                             Height="25"
+                             HorizontalAlignment="Stretch"/>
+            </DockPanel>
             <StackPanel Margin="5">
                 <Label>Min match length:</Label>
                 <TextBox Text="{Binding Configuration.MIN_MATCH_LENGTH, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />

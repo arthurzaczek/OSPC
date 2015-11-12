@@ -149,25 +149,10 @@ namespace OSPCGui.ViewModels
 
         private void RemoveFiles()
         {
-            foreach(var s in SelectedSubmissions.ToList())
+            foreach (var s in SelectedSubmissions.ToList())
             {
                 Submissions.Remove(s);
             }
-        }
-
-        void IProgressReporter.Start()
-        {
-            throw new NotImplementedException();
-        }
-
-        void IProgressReporter.Progress(double p)
-        {
-            throw new NotImplementedException();
-        }
-
-        void IProgressReporter.End()
-        {
-            throw new NotImplementedException();
         }
         #endregion
 
@@ -241,6 +226,40 @@ namespace OSPCGui.ViewModels
                     OnPropertyChanged("IsRunning");
                 }
             }
+        }
+
+        private int _progress;
+        public int Progress
+        {
+            get
+            {
+                return _progress;
+            }
+            set
+            {
+                if (_progress != value)
+                {
+                    _progress = value;
+                    OnPropertyChanged("Progress");
+                }
+            }
+        }
+        #endregion
+
+        #region IProgressReporter
+        void IProgressReporter.Start()
+        {
+            Progress = 0;
+        }
+
+        void IProgressReporter.Progress(double p)
+        {
+            Progress = (int)(100.0 * p);
+        }
+
+        void IProgressReporter.End()
+        {
+            Progress = 100;
         }
         #endregion
     }
