@@ -53,6 +53,7 @@
     <Compile Include="Configuration.cs" />
     <Compile Include="FriendFinder.cs" />
     <Compile Include="Helper.cs" />
+    <Compile Include="IProgressReporter.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

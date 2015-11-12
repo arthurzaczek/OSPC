@@ -10,7 +10,7 @@ using OSPC.Tokenizer;
 
 namespace OSPCGui.ViewModels
 {
-    public class MainWindowViewModel : ViewModel
+    public class MainWindowViewModel : ViewModel, IProgressReporter
     {
         public MainWindowViewModel()
         {
@@ -48,7 +48,7 @@ namespace OSPCGui.ViewModels
             {
                 await Task.Run(() =>
                 {
-                    var comparer = new Comparer(Configuration);
+                    var comparer = new Comparer(Configuration, (IProgressReporter)this);
                     var compareResult = comparer.Compare(Submissions.Select(i => i.Submission).ToArray());
                     var result = OSPCResult.Create(compareResult);
                     var friends = new OSPC.FriendFinder(Configuration);
@@ -153,6 +153,21 @@ namespace OSPCGui.ViewModels
             {
                 Submissions.Remove(s);
             }
+        }
+
+        void IProgressReporter.Start()
+        {
+            throw new NotImplementedException();
+        }
+
+        void IProgressReporter.Progress(double p)
+        {
+            throw new NotImplementedException();
+        }
+
+        void IProgressReporter.End()
+        {
+            throw new NotImplementedException();
         }
         #endregion
 

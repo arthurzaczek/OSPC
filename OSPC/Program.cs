@@ -1,6 +1,4 @@
-﻿//#define SINGLE_THREADED
-
-using NDesk.Options;
+﻿using NDesk.Options;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -65,13 +63,15 @@ namespace OSPC
                 return;
             }
 
-            var comparer = new Comparer(cfg);
+            var comparer = new Comparer(cfg, new ConsoleProgressReporter());
             var friendfinder = new FriendFinder(cfg);
             var watch = new Stopwatch();
 
             watch.Start();
 
+            Console.WriteLine("Collecting files");
             var files = CollectFiles(cfg, tokenizer);
+            Console.WriteLine("  finished; time: {0:n2} sec.", watch.Elapsed.TotalSeconds);
             if (files.Length == 0)
             {
                 Console.WriteLine("No files found to compare!");

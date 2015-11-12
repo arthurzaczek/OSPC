@@ -1,4 +1,6 @@
-﻿using OSPC.Tokenizer;
+﻿// #define SINGLE_THREADED
+
+using OSPC.Tokenizer;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -64,14 +66,18 @@ namespace OSPC
     public class Comparer
     {
         private readonly Configuration _cfg;
+        private readonly IProgressReporter _progress;
 
-        public Comparer(Configuration cfg)
+        public Comparer(Configuration cfg, IProgressReporter progress)
         {
             this._cfg = cfg;
+            this._progress = progress;
         }
 
         public List<CompareResult> Compare(Submission[] files)
         {
+            _progress.Start();
+
             var compareList = new List<Tuple<Submission, Submission>>();
             for (int a = 0; a < files.Length; a++)
             {
@@ -83,9 +89,11 @@ namespace OSPC
                 }
             }
 
-            int progressCounter = 0;
+            
             object _lock = new object();
             var compareResult = new List<CompareResult>();
+            int counter = 0;
+            int max = compareList.Count;
 
 #if SINGLE_THREADED
             foreach(var pair in compareList)
@@ -98,13 +106,14 @@ namespace OSPC
                 lock (_lock)
                 {
                     compareResult.Add(r);
-                    if (++progressCounter % 100 == 0) Console.Write(".");
+                    counter++;
+                    _progress.Progress((double)counter / (double)max);
                 }
             }
 #if !SINGLE_THREADED
             );
 #endif
-            Console.WriteLine();
+            _progress.End();
 
             return compareResult;
         }
