@@ -454,13 +454,13 @@ namespace OSPC.Reporter.Html
         {
             html.WriteLine("</table>");
             html.WriteLine("<div id=\"summary-graph-pane\">");
+            html.WriteLine("<img src=\"PercentGraph.png\" />");
+            html.WriteLine("<br/>");
             html.WriteLine("<img src=\"TokenGraph.png\" />");
             html.WriteLine("<br/>");
             html.WriteLine("<img src=\"TokenDetailGraph.png\" />");
             html.WriteLine("<br/>");
             html.WriteLine("<img src=\"TokenMatchGraph.png\" />");
-            html.WriteLine("<br/>");
-            html.WriteLine("<img src=\"PercentGraph.png\" />");
             html.WriteLine("</div>");
         }
         #endregion
