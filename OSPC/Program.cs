@@ -66,7 +66,7 @@ namespace OSPC
             }
 
             var comparer = new Comparer(cfg);
-            var friendfinder = new FriendFinder(cfg);            
+            var friendfinder = new FriendFinder(cfg);
             var watch = new Stopwatch();
 
             watch.Start();
@@ -91,7 +91,7 @@ namespace OSPC
                 CreateReports(html, console, result);
                 Console.WriteLine("  finished in total {0:n2} sec.", watch.Elapsed.TotalSeconds);
             }
-        }        
+        }
 
         private static void CreateReports(Reporter.IReporter html, Reporter.IReporter console, OSPCResult result)
         {
@@ -138,9 +138,9 @@ namespace OSPC
             var includeDir = cfg.IncludeDir.Select(i => new Regex(i)).ToList();
             var excludeDir = cfg.ExcludeDir.Select(i => new Regex(i)).ToList();
 
-            foreach(var dir in cfg.Dirs)
-            { 
-                CollectFilesRecurse(files, Directory.GetDirectories(dir), cfg.Filter, include, exclude, includeDir, excludeDir, cfg.Recurse);
+            foreach (var dir in cfg.Dirs)
+            {
+                CollectFilesRecurse(files, Directory.GetDirectories(dir), include, exclude, includeDir, excludeDir, cfg);
             }
 
             files.AddRange(cfg.ExtraFiles);
@@ -165,26 +165,30 @@ namespace OSPC
                     .ToArray();
         }
 
-        private static void CollectFilesRecurse(List<string> files, IEnumerable<string> directories, IEnumerable<string> filters, IEnumerable<Regex> include, IEnumerable<Regex> exclude, IEnumerable<Regex> includeDir, IEnumerable<Regex> excludeDir, bool recurse)
+        private static void CollectFilesRecurse(List<string> files, IEnumerable<string> directories, IEnumerable<Regex> include, IEnumerable<Regex> exclude, IEnumerable<Regex> includeDir, IEnumerable<Regex> excludeDir, Configuration cfg)
         {
-            foreach(var dir in directories)
+            foreach (var dir in directories)
             {
+                if (cfg.Verbose) Console.WriteLine("D: {0}", dir);
                 if (includeDir.Any() && !includeDir.Any(r => r.Match(dir).Success)) continue;
                 if (excludeDir.Any() && excludeDir.Any(r => r.Match(dir).Success)) continue;
 
-                foreach (var pattern in filters)
+                foreach (var pattern in cfg.Filter)
                 {
-                    foreach(var f in Directory.GetFiles(dir, pattern))
+                    foreach (var f in Directory.GetFiles(dir, pattern))
                     {
+                        if (cfg.Verbose) Console.WriteLine("  F: {0}", f);
+
                         if (include.Any() && !include.Any(r => r.Match(f).Success)) continue;
                         if (exclude.Any() && exclude.Any(r => r.Match(f).Success)) continue;
+
                         files.Add(f);
                     }
                 }
 
-                if(recurse)
+                if (cfg.Recurse)
                 {
-                    CollectFilesRecurse(files, Directory.GetDirectories(dir), filters, include, exclude, includeDir, excludeDir, recurse);
+                    CollectFilesRecurse(files, Directory.GetDirectories(dir), include, exclude, includeDir, excludeDir, cfg);
                 }
             }
         }
