@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>3.10</ProductVersion>
+    <ProjectGuid>d9386950-ce58-40ea-87d9-535c7664f928</ProjectGuid>
+    <SchemaVersion>2.0</SchemaVersion>
+    <OutputName>OSPC.Setup</OutputName>
+    <OutputType>Package</OutputType>
+    <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ">$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
+    <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
+    <GitVersion_NoFetchEnabled>true</GitVersion_NoFetchEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <DefineConstants>Debug</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Product.wxs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <WixExtension Include="WixUIExtension">
+      <HintPath>$(WixExtDir)\WixUIExtension.dll</HintPath>
+      <Name>WixUIExtension</Name>
+    </WixExtension>
+  </ItemGroup>
+  <Import Project="$(WixTargetsPath)" />
+  <!--
+	To modify your build process, add your task inside one of the targets below and uncomment it.
+	Other similar extension points exist, see Wix.targets.
+	-->
+  <!-- Custom build target. This will not call UpdateAssemblyInfo as a WiX Project does not contain a AssemblyInfo.cs file  -->
+  <Target Name="UpdateVersionInfo">
+    <WriteVersionInfoToBuildLog SolutionDirectory="$(SolutionDir)" NoFetch="true" />
+    <GetVersion SolutionDirectory="$(SolutionDir)" NoFetch="true">
+      <Output TaskParameter="Major" PropertyName="GfvMajor" />
+      <Output TaskParameter="Minor" PropertyName="GfvMinor" />
+      <Output TaskParameter="Patch" PropertyName="GfvPatch" />
+      <Output TaskParameter="BuildMetaData" PropertyName="GfvBuildMetaData" />
+      <Output TaskParameter="FullBuildMetaData" PropertyName="GfvFullBuildMetaData" />
+      <Output TaskParameter="BranchName" PropertyName="GfvBranchName" />
+      <Output TaskParameter="Sha" PropertyName="GfvSha" />
+      <Output TaskParameter="MajorMinorPatch" PropertyName="GfvMajorMinorPatch" />
+      <Output TaskParameter="SemVer" PropertyName="GfvSemVer" />
+      <Output TaskParameter="LegacySemVer" PropertyName="GfvLegacySemVer" />
+      <Output TaskParameter="LegacySemVerPadded" PropertyName="GfvLegacySemVerPadded" />
+      <Output TaskParameter="FullSemVer" PropertyName="GfvFullSemVer" />
+      <Output TaskParameter="AssemblySemVer" PropertyName="GfvAssemblySemVer" />
+      <Output TaskParameter="NuGetVersion" PropertyName="GfvNuGetVersion" />
+      <Output TaskParameter="PreReleaseTag" PropertyName="GfvPreReleaseTag" />
+      <Output TaskParameter="PreReleaseTagWithDash" PropertyName="GfvPreReleaseTagWithDash" />
+      <Output TaskParameter="InformationalVersion" PropertyName="GfvInformationalVersion" />
+    </GetVersion>
+  </Target>
+  <Target Name="BeforeBuild" DependsOnTargets="UpdateVersionInfo">
+    <PropertyGroup>
+      <DefineConstants>ProductVersion=$(GfvMajorMinorPatch)</DefineConstants>
+    </PropertyGroup>
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  <Import Project="..\packages\GitVersionTask.3.3.0\Build\portable-net+sl+win+wpa+wp\GitVersionTask.targets" Condition="Exists('..\packages\GitVersionTask.3.3.0\Build\portable-net+sl+win+wpa+wp\GitVersionTask.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\GitVersionTask.3.3.0\Build\portable-net+sl+win+wpa+wp\GitVersionTask.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\GitVersionTask.3.3.0\Build\portable-net+sl+win+wpa+wp\GitVersionTask.targets'))" />
+  </Target>
+</Project>

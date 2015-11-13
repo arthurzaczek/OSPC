@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*" Name="OSPC" Language="1033" Version="$(var.ProductVersion)" Manufacturer="Arthur Zaczek" UpgradeCode="219e8138-cd2a-4379-9f86-1a822583251f">
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate />
+
+    <Feature Id="ProductFeature" Title="OSPC" Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+      <ComponentGroupRef Id="ProgramMenuComponents" />      
+    </Feature>
+
+    <Icon Id="IconOSPCGui.exe" SourceFile="..\OSPCGui\bin\Release\OSPCGui.exe" />
+
+    <WixVariable Id="WixUILicenseRtf" Value="..\License.rtf" />
+    <UIRef Id="WixUI_Minimal" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+  </Product>
+
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="zaczekFolder" Name="Arthur Zaczek">
+          <Directory Id="INSTALLFOLDER" Name="OSPC" />
+        </Directory>
+      </Directory>
+      <Directory Id="ProgramMenuFolder" Name="Programs">
+        <Directory Id="ProgramMenuDir" Name="OSPC">
+        </Directory>
+      </Directory>
+    </Directory>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+      <Component Id="ProductComponent" Guid="{AB353B58-F8DB-4FBD-AF46-2E4814572C80}">
+        <File Id="MainEXE" Name="OSPC.exe" DiskId="1" Source="..\OSPC\bin\Release\OSPC.exe" />
+        <File Id="GUIEXE" Name="OSPCGui.exe" DiskId="1" Source="..\OSPCGui\bin\Release\OSPCGui.exe" KeyPath="yes" />
+        <Shortcut Id="startmenuGUIEXE" Directory="ProgramMenuDir" Name="OSPC Gui"
+              WorkingDirectory='INSTALLDIR' Icon="IconOSPCGui.exe" IconIndex="0" Advertise="yes" />
+        <!-- Configs -->
+        <File Id="GUICONFIG" Name="OSPCGui.exe.config" DiskId="1" Source="..\OSPCGui\bin\Release\OSPCGui.exe.config" />
+        <!-- Dependencies -->
+        <File Id="ZetGraph" Name="ZedGraph.dll" DiskId="1" Source="..\OSPC\bin\Release\ZedGraph.dll" />
+      </Component>
+    </ComponentGroup>
+    <ComponentGroup Id="ProgramMenuComponents" Directory="ProgramMenuDir">
+      <Component Id="ProgramMenuDir" Guid="{CDBB696A-D2F5-40C9-9EE1-10DC94950E56}">
+        <RemoveFolder Id='ProgramMenuDir' On='uninstall' />
+        <RegistryValue Root='HKCU' Key='Software\[Manufacturer]\[ProductName]' Type='string' Value='' KeyPath='yes' />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>
