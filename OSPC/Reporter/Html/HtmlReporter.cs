@@ -56,6 +56,11 @@ namespace OSPC.Reporter.Html
                 Directory.CreateDirectory(OutPath);
             }
 
+            if(!Directory.Exists(Path.Combine(OutPath, "Matches")))
+            {
+                Directory.CreateDirectory(Path.Combine(OutPath, "Matches"));
+            }
+
             CreateSummaryPage(r);
             CreateDetailPages(r);
             CreateFriendFinderPage(r);
@@ -72,7 +77,7 @@ namespace OSPC.Reporter.Html
         {
             using (var html = new StreamWriter(Path.Combine(OutPath, "friendfinder.html")))
             {
-                WriteHeader(html, "OSPC - FriendFinder", new TupleList<string, string>() { { "index.html", "Results" } });
+                WriteHeader(html, "OSPC - FriendFinder", "", new TupleList<string, string>() { { "index.html", "Results" } });
                 WriteFriendFinderTitle(html);
 
                 foreach (var f in r.Friends)
@@ -115,7 +120,7 @@ namespace OSPC.Reporter.Html
         {
             using (var html = new StreamWriter(Path.Combine(OutPath, "index.html")))
             {
-                WriteHeader(html, "OSPC", new TupleList<string, string>() { { "friendfinder.html", "Friend Finder" } });
+                WriteHeader(html, "OSPC", "", new TupleList<string, string>() { { "friendfinder.html", "Friend Finder" } });
                 WriteSummaryTitle(html);
 
                 foreach (var result in r.Results)
@@ -321,7 +326,7 @@ namespace OSPC.Reporter.Html
         {
             using (var html = new StreamWriter(Path.Combine(OutPath, diffName)))
             {
-                WriteHeader(html, diffName, new TupleList<string, string>() { { "index.html", "Results" }, { "friendfinder.html", "Friend Finder" } });
+                WriteHeader(html, diffName, "../", new TupleList<string, string>() { { "index.html", "Results" }, { "friendfinder.html", "Friend Finder" } });
 
                 html.WriteLine("<h1>Details</h2>");
                 html.WriteLine("<p id=\"detail-summary\">Matches: {0}<br/>Common token: {1}<br/>Token / match: {2:n2}</p>",
@@ -546,10 +551,10 @@ namespace OSPC.Reporter.Html
         #region Commmon
         private static string GetDetailFileName(CompareResult result)
         {
-            return string.Format("Match_{0:00000}.html", result.Index + 1);
+            return string.Format("Matches/Match_{0:00000}.html", result.Index + 1);
         }
 
-        private static void WriteHeader(StreamWriter html, string title, TupleList<string, string> menu)
+        private static void WriteHeader(StreamWriter html, string title, string baseDir, TupleList<string, string> menu)
         {
             if (html == null) throw new ArgumentNullException("html");
             if (string.IsNullOrWhiteSpace(title)) throw new ArgumentNullException("title");
@@ -559,14 +564,14 @@ namespace OSPC.Reporter.Html
 <head>
     <meta charset=""UTF-8"">
     <title>{0}</title>
-    <link href=""style.css"" rel=""stylesheet"" />
+    <link href=""{1}style.css"" rel=""stylesheet"" />
 </head>
-<body>", title);
+<body>", title, baseDir);
 
             html.WriteLine(@"<ul id=""menu"">");
             foreach (var item in menu)
             {
-                html.WriteLine(@"<li class=""menu-item""><a class=""menu-link"" href=""{0}"">{1}</a></li>", item.Item1, item.Item2);
+                html.WriteLine(@"<li class=""menu-item""><a class=""menu-link"" href=""{2}{0}"">{1}</a></li>", item.Item1, item.Item2, baseDir);
             }
             html.WriteLine(@"</ul>");
         }
