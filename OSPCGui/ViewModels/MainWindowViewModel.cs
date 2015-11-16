@@ -133,7 +133,7 @@ namespace OSPCGui.ViewModels
             }
         }
 
-        private void AddFiles()
+        public void AddFiles()
         {
             var dialog = new OpenFileDialog()
             {
@@ -171,17 +171,79 @@ namespace OSPCGui.ViewModels
             }
         }
 
-        private bool CanRemoveFiles()
+        public bool CanRemoveFiles()
         {
             return SelectedSubmissions.Count > 0;
         }
 
-        private void RemoveFiles()
+        public void RemoveFiles()
         {
             foreach (var s in SelectedSubmissions.ToList())
             {
                 Submissions.Remove(s);
             }
+        }
+        #endregion
+
+        #region ExitCommand
+        private ICommandViewModel _exitCommand;
+        public ICommandViewModel ExitCommand
+        {
+            get
+            {
+                if (_exitCommand == null)
+                {
+                    _exitCommand = new SimpleCommandViewModel("Exit", "Exits the program", Exit);
+                }
+                return _exitCommand;
+            }
+        }
+
+        public void Exit()
+        {
+            System.Windows.Application.Current.Shutdown();
+        }
+        #endregion
+
+        #region HelpCommand
+        private ICommandViewModel _helpCommand;
+        public ICommandViewModel HelpCommand
+        {
+            get
+            {
+                if (_helpCommand == null)
+                {
+                    _helpCommand = new SimpleCommandViewModel("Help", "Help & usefull information", Help);
+                }
+                return _helpCommand;
+            }
+        }
+
+        public void Help()
+        {
+            var dlg = new Help();
+            dlg.ShowDialog();
+        }
+        #endregion
+
+        #region AboutCommand
+        private ICommandViewModel _aboutCommand;
+        public ICommandViewModel AboutCommand
+        {
+            get
+            {
+                if (_aboutCommand == null)
+                {
+                    _aboutCommand = new SimpleCommandViewModel("About", "About this program", About);
+                }
+                return _aboutCommand;
+            }
+        }
+
+        public void About()
+        {
+            var dlg = new About();
+            dlg.ShowDialog();
         }
         #endregion
 

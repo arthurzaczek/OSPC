@@ -12,6 +12,25 @@
         Height="600" 
         commands:SmartRoutedUICommand.IsCommandSink="true">
     <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="File">
+                <MenuItem Header="{Binding AddFilesCommand.Label}"
+                          ToolTip="{Binding AddFilesCommand.ToolTip}"
+                          Command="{Binding AddFilesCommand}"/>
+                <Separator />
+                <MenuItem Header="{Binding ExitCommand.Label}"
+                          ToolTip="{Binding ExitCommand.ToolTip}"
+                          Command="{Binding ExitCommand}"/>
+            </MenuItem>
+            <MenuItem Header="Help">
+                <MenuItem Header="{Binding HelpCommand.Label}"
+                          ToolTip="{Binding HelpCommand.ToolTip}"
+                          Command="{Binding HelpCommand}"/>
+                <MenuItem Header="{Binding AboutCommand.Label}"
+                          ToolTip="{Binding AboutCommand.ToolTip}"
+                          Command="{Binding AboutCommand}"/>
+            </MenuItem>
+        </Menu>
 
         <Border DockPanel.Dock="Bottom"
                 BorderThickness="0, 1, 0, 0"

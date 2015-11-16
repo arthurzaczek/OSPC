@@ -97,6 +97,7 @@ if(a < b)
 
 The result would be:
 
+Token	  | Description
 --------- | --------------------------------
 if		  | Token
 (		  | Symbol
@@ -160,4 +161,22 @@ printf	  | printf	  | Yes
 **13**	  | **13**	  | **3**
 
 10 Token of 13 are the same, resulting in a 76.92 % similarity. It depends on your individual progarmming course, if this match count's as equal or not.
+
+Copyright and License
+---------------------
+
+Copyright (C) 2015 Arthur Zaczek at the [UAS Technikum Wien](http://www.technikum-wien.at/)
+
+Licensed under the [GPL V3](http://www.gnu.org/licenses/gpl-3.0.txt)
+
+External libraries
+------------------
+
+*ZetGraph, LGPL 2.1*
+http://sourceforge.net/projects/zedgraph/
+http://www.gnu.org/licenses/lgpl-2.1.txt
+
+*NDesk.org's OptionSet, MIT/X11*
+http://www.ndesk.org/Options
+http://opensource.org/licenses/mit-license.php
 

@@ -1,0 +1,199 @@
+﻿<html>
+<head>
+    <style>
+        body {
+            font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+            padding: 0;
+            margin: 1em;
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid #CCCCCC;
+            border-collapse: collapse;
+        }
+
+        td {
+            padding: 0.2em;
+        }
+    </style>
+</head>
+<body>
+    <h2 id="how-it-works">How it works</h2>
+    <p>Each file is split up into tokens and symbols by a Tokenizer. Comments and whitespaces are ignored.</p>
+    <h3 id="example-">Example:</h3>
+<pre><code>if(a &lt; b)
+{
+    /* Yes! */
+    printf("Yes");
+}
+</code></pre><p>The result would be:</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Token</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>if</td>
+                <td>Token</td>
+            </tr>
+            <tr>
+                <td>(</td>
+                <td>Symbol</td>
+            </tr>
+            <tr>
+                <td>a</td>
+                <td>Token</td>
+            </tr>
+            <tr>
+                <td>&lt;</td>
+                <td>Symbol</td>
+            </tr>
+            <tr>
+                <td>b</td>
+                <td>Token</td>
+            </tr>
+            <tr>
+                <td>)</td>
+                <td>Symbol</td>
+            </tr>
+            <tr>
+                <td>{</td>
+                <td>Symbol</td>
+            </tr>
+            <tr>
+                <td>printf</td>
+                <td>Token</td>
+            </tr>
+            <tr>
+                <td>(</td>
+                <td>Symbol</td>
+            </tr>
+            <tr>
+                <td>"Yes"</td>
+                <td>Token (as quoted string)</td>
+            </tr>
+            <tr>
+                <td>)</td>
+                <td>Symbol</td>
+            </tr>
+            <tr>
+                <td>;</td>
+                <td>Symbol</td>
+            </tr>
+            <tr>
+                <td>}</td>
+                <td>Symbol</td>
+            </tr>
+        </tbody>
+    </table>
+    <p>Then, each file is compared with all other files. Each Token is compared with all other token. Finally, the longest match are selected as the result match.</p>
+    <p>What is a match? A match is the longest chain of equal tokens, with some exceptions. </p>
+    <ol>
+        <li>Every {max-match-distance} token must match</li>
+        <li>{min-common-token} % of token must match.</li>
+    </ol>
+    <h3 id="example-">Example:</h3>
+    <p><strong>File A</strong></p>
+<pre><code>if(a &lt; b)
+{
+    /* Yes! */
+    printf("Yes");
+}
+</code></pre><p><strong>File B</strong></p>
+<pre><code>if(x &lt; y)
+{
+    // True
+    printf("True");
+}
+</code></pre>
+    <table>
+        <thead>
+            <tr>
+                <th>A</th>
+                <th>B</th>
+                <th>Match</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>if</td>
+                <td>if</td>
+                <td>Yes</td>
+            </tr>
+            <tr>
+                <td>(</td>
+                <td>(</td>
+                <td>Yes</td>
+            </tr>
+            <tr>
+                <td>a</td>
+                <td>x</td>
+                <td><strong>No</strong></td>
+            </tr>
+            <tr>
+                <td>&lt;</td>
+                <td>&lt;</td>
+                <td>Yes</td>
+            </tr>
+            <tr>
+                <td>b</td>
+                <td>y</td>
+                <td><strong>No</strong></td>
+            </tr>
+            <tr>
+                <td>)</td>
+                <td>)</td>
+                <td>Yes</td>
+            </tr>
+            <tr>
+                <td>{</td>
+                <td>{</td>
+                <td>Yes</td>
+            </tr>
+            <tr>
+                <td>printf</td>
+                <td>printf</td>
+                <td>Yes</td>
+            </tr>
+            <tr>
+                <td>(</td>
+                <td>(</td>
+                <td>Yes</td>
+            </tr>
+            <tr>
+                <td>"Yes"</td>
+                <td>"True"</td>
+                <td><strong>No</strong></td>
+            </tr>
+            <tr>
+                <td>)</td>
+                <td>)</td>
+                <td>Yes</td>
+            </tr>
+            <tr>
+                <td>;</td>
+                <td>;</td>
+                <td>Yes</td>
+            </tr>
+            <tr>
+                <td>}</td>
+                <td>}</td>
+                <td>Yes</td>
+            </tr>
+            <tr>
+                <td><strong>13</strong></td>
+                <td><strong>13</strong></td>
+                <td><strong>3</strong></td>
+            </tr>
+        </tbody>
+    </table>
+    <p>10 Token of 13 are the same, resulting in a 76.92 % similarity. It depends on your individual progarmming course, if this match count's as equal or not.</p>
+</body>
+</html>

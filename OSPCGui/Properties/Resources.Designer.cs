@@ -8,10 +8,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace OSPCGui.Properties
-{
-
-
+namespace OSPCGui.Properties {
+    using System;
+    
+    
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -22,49 +22,110 @@ namespace OSPCGui.Properties
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources
-    {
-
+    internal class Resources {
+        
         private static global::System.Resources.ResourceManager resourceMan;
-
+        
         private static global::System.Globalization.CultureInfo resourceCulture;
-
+        
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Resources()
-        {
+        internal Resources() {
         }
-
+        
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager
-        {
-            get
-            {
-                if ((resourceMan == null))
-                {
+        internal static global::System.Resources.ResourceManager ResourceManager {
+            get {
+                if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("OSPCGui.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
             }
         }
-
+        
         /// <summary>
         ///   Overrides the current thread's CurrentUICulture property for all
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture
-        {
-            get
-            {
+        internal static global::System.Globalization.CultureInfo Culture {
+            get {
                 return resourceCulture;
             }
-            set
-            {
+            set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;html&gt;
+        ///&lt;head&gt;
+        ///    &lt;style&gt;
+        ///        body {
+        ///            font-family: &quot;Helvetica Neue&quot;,Helvetica,Arial,sans-serif;
+        ///            padding: 0;
+        ///            margin: 1em;
+        ///        }
+        ///
+        ///        table {
+        ///            border-collapse: collapse;
+        ///        }
+        ///
+        ///        table, th, td {
+        ///            border: 1px solid #CCCCCC;
+        ///            border-collapse: collapse;
+        ///        }
+        ///
+        ///        td {
+        ///            padding: 0.2em;
+        ///        }
+        ///    &lt;/style&gt;
+        ///&lt;/head&gt;
+        ///&lt;body&gt;
+        ///    &lt;h1&gt;Open Software Plagiarism Checker&lt;/h1&gt;
+        ///    &lt;p&gt;
+        ///    [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string AboutText {
+            get {
+                return ResourceManager.GetString("AboutText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;html&gt;
+        ///&lt;head&gt;
+        ///    &lt;style&gt;
+        ///        body {
+        ///            font-family: &quot;Helvetica Neue&quot;,Helvetica,Arial,sans-serif;
+        ///            padding: 0;
+        ///            margin: 1em;
+        ///        }
+        ///
+        ///        table {
+        ///            border-collapse: collapse;
+        ///        }
+        ///
+        ///        table, th, td {
+        ///            border: 1px solid #CCCCCC;
+        ///            border-collapse: collapse;
+        ///        }
+        ///
+        ///        td {
+        ///            padding: 0.2em;
+        ///        }
+        ///    &lt;/style&gt;
+        ///&lt;/head&gt;
+        ///&lt;body&gt;
+        ///    &lt;h2 id=&quot;how-it-works&quot;&gt;How it works&lt;/h2&gt;
+        ///    &lt;p&gt;Each fi [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string HelpText {
+            get {
+                return ResourceManager.GetString("HelpText", resourceCulture);
             }
         }
     }
