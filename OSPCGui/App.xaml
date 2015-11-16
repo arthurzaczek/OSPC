@@ -13,5 +13,14 @@
         <converter:LighterShadeConverter x:Key="LighterShadeConverter" />
         <converter:DarkerShadeConverter x:Key="DarkerShadeConverter" />
         <converter:EmptyToCollapsedConverter x:Key="EmptyToCollapsedConverter" />
+
+        <Style x:Key="GroupLabel" 
+               TargetType="TextBlock">
+            <Setter Property="Margin" Value="5" />
+
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="FontWeight" Value="Thin" />
+            <Setter Property="FontFamily" Value="Segone UI" />
+        </Style>
     </Application.Resources>
 </Application>

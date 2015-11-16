@@ -300,6 +300,15 @@ namespace OSPCGui.ViewModels
                 }
             }
         }
+
+        public string CopyrightText
+        {
+            get
+            {
+                return string.Format("OSPC Version {0}, Copyright (C) 2015 Arthur Zaczek at the UAS Technikum Wien, GPL V3", 
+                    typeof(OSPCGui.App).Assembly.GetName().Version);
+            }
+        }
         #endregion
 
         #region IProgressReporter

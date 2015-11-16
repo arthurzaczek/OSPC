@@ -11,83 +11,94 @@
         Width="800"
         Height="600" 
         commands:SmartRoutedUICommand.IsCommandSink="true">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
+    <DockPanel>
 
-        <DockPanel Grid.Column="0" 
+        <Border DockPanel.Dock="Bottom"
+                BorderThickness="0, 1, 0, 0"
+                BorderBrush="LightGray">
+            <TextBlock Margin="5"                   
+                   Text="{Binding CopyrightText}" />
+        </Border>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <DockPanel Grid.Column="0" 
                    MinWidth="250">
-            <ToolBar DockPanel.Dock="Top">
-                <ctrls:CommandButton CommandViewModel="{Binding AddFilesCommand}"
+                <TextBlock DockPanel.Dock="Top" Text="Files:" Style="{StaticResource GroupLabel}" />
+                <ToolBar DockPanel.Dock="Top">
+                    <ctrls:CommandButton CommandViewModel="{Binding AddFilesCommand}"
                                      Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" />
-                <ctrls:CommandButton CommandViewModel="{Binding RemoveFilesCommand}"
+                    <ctrls:CommandButton CommandViewModel="{Binding RemoveFilesCommand}"
                                      Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" />
-            </ToolBar>
-            <TextBlock DockPanel.Dock="Bottom" 
+                </ToolBar>
+                <TextBlock DockPanel.Dock="Bottom" 
                        Text="{Binding SubmissionCountAsText}"
                        Margin="5"/>
-            <ctrls:ListView ItemsSource="{Binding Submissions}"
+                <ctrls:ListView ItemsSource="{Binding Submissions}"
                             SelectedViewModels="{Binding SelectedSubmissions}"
                             HorizontalAlignment="Stretch"/>
-        </DockPanel>
+            </DockPanel>
 
-        <GridSplitter Grid.Column="1" 
+            <GridSplitter Grid.Column="1" 
                       Width="5" 
                       HorizontalAlignment="Center" 
                       ResizeBehavior="PreviousAndNext" 
                       VerticalAlignment="Stretch" />
 
-
-        <DockPanel Grid.Column="2">
-            <ProgressBar DockPanel.Dock="Bottom"
+            <DockPanel Grid.Column="2">
+                <ProgressBar DockPanel.Dock="Bottom"
                              Value="{Binding Progress}" 
                              Minimum="0" 
                              Maximum="100"
                              Margin="5"
                              Height="25"
                              HorizontalAlignment="Stretch"/>
-            <StackPanel DockPanel.Dock="Top"
+                <TextBlock DockPanel.Dock="Top" Text="Settings:" Style="{StaticResource GroupLabel}" />
+                <StackPanel DockPanel.Dock="Top"
                         Margin="5">
-                <Label>Min match length (1 - ):</Label>
-                <TextBox Text="{Binding Configuration.MIN_MATCH_LENGTH, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    <Label>Min match length (1 - ):</Label>
+                    <TextBox Text="{Binding Configuration.MIN_MATCH_LENGTH, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                          ToolTip="Minimum count of matching tokens, including non-matching tokens."/>
-                
-                <Label>Max match distance (1 - ):</Label>
-                <TextBox Text="{Binding Configuration.MAX_MATCH_DISTANCE, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+
+                    <Label>Max match distance (1 - ):</Label>
+                    <TextBox Text="{Binding Configuration.MAX_MATCH_DISTANCE, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                          ToolTip="Maximum distance between tokens to count as a match. 1 = exact match."/>
-                
-                <Label>Min quotient of common token (0.00 - 1.00):</Label>
-                <TextBox Text="{Binding Configuration.MIN_COMMON_TOKEN, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}"
+
+                    <Label>Min quotient of common token (0.00 - 1.00):</Label>
+                    <TextBox Text="{Binding Configuration.MIN_COMMON_TOKEN, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}"
                          ToolTip="Quotient of token that must match to count as a match. 1 = every token must match."/>
 
-                <Label>Min friend finder similarity (-1, 0.00 - 1.00):</Label>
-                <TextBox Text="{Binding Configuration.MIN_FRIEND_FINDER_SIMILARITY, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    <Label>Min friend finder similarity (-1, 0.00 - 1.00):</Label>
+                    <TextBox Text="{Binding Configuration.MIN_FRIEND_FINDER_SIMILARITY, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                          ToolTip="Min. similarity (quotient) of the other submission to count as contribution by a friend. if &lt; 0 then the value will be calculated automatically."/>
-                
-                <Label>HTML report path:</Label>
-                <TextBox Text="{Binding HtmlReportPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+
+                    <Label>HTML report path:</Label>
+                    <TextBox Text="{Binding HtmlReportPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                          ToolTip="Path to the HTML report output directory."/>
-                
-                <ctrls:CommandButton DockPanel.Dock="Right" 
+
+                    <ctrls:CommandButton DockPanel.Dock="Right" 
                                      HorizontalAlignment="Left"
                                      Margin="0,20,0,0"
                                      Width="150"
                                      Height="30"
                                      CommandViewModel="{Binding CheckCommand}" />
-            </StackPanel>
-            <ListBox ItemsSource="{Binding Messages}"
+                </StackPanel>
+                <TextBlock DockPanel.Dock="Top" Text="Messages:" Style="{StaticResource GroupLabel}" />
+                <ListBox ItemsSource="{Binding Messages}"
                      x:Name="lstMessages"
                      Margin="5">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding}"
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}"
                                    FontFamily="Courier New" />
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-        </DockPanel>
-    </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+        </Grid>
+    </DockPanel>
 </Window>
