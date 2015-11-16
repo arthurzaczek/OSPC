@@ -44,6 +44,7 @@ namespace OSPC
 
             Console.WriteLine("Open Software Plagiarism Checker");
             Console.WriteLine("================================");
+            Console.WriteLine("Version {0}", typeof(OSPC.Program).Assembly.GetName().Version);
             Console.WriteLine();
             Console.WriteLine("Copyright (C) 2015 Arthur Zaczek at the UAS Technikum Wien, GPL V3");
             Console.WriteLine("This program comes with ABSOLUTELY NO WARRANTY; see the GPL V3 for details.");
