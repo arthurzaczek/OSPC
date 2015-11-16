@@ -28,6 +28,11 @@ namespace OSPC
             Console.WriteLine("Open Software Plagiarism Checker");
             Console.WriteLine("================================");
             Console.WriteLine();
+            Console.WriteLine("Copyright (C) 2015 Arthur Zaczek at the UAS Technikum Wien, GPL V3");
+            Console.WriteLine("This program comes with ABSOLUTELY NO WARRANTY; see the GPL V3 for details.");
+            Console.WriteLine("This is free software, and you are welcome to redistribute it");
+            Console.WriteLine("under certain conditions; see the GPL V3 for details.");
+            Console.WriteLine();
 
             var p = new OptionSet()
             {
