@@ -162,10 +162,7 @@ namespace OSPC
             var includeDir = cfg.IncludeDir.Select(i => new Regex(i)).ToList();
             var excludeDir = cfg.ExcludeDir.Select(i => new Regex(i)).ToList();
 
-            foreach (var dir in cfg.Dirs)
-            {
-                CollectFilesRecurse(files, Directory.GetDirectories(dir), include, exclude, includeDir, excludeDir, cfg);
-            }
+            CollectFilesRecurse(files, cfg.Dirs, true, include, exclude, includeDir, excludeDir, cfg);
 
             files.AddRange(cfg.ExtraFiles);
 
@@ -189,13 +186,16 @@ namespace OSPC
                     .ToArray();
         }
 
-        private static void CollectFilesRecurse(List<string> files, IEnumerable<string> directories, IEnumerable<Regex> include, IEnumerable<Regex> exclude, IEnumerable<Regex> includeDir, IEnumerable<Regex> excludeDir, Configuration cfg)
+        private static void CollectFilesRecurse(List<string> files, IEnumerable<string> directories, bool isFirstLevel, IEnumerable<Regex> include, IEnumerable<Regex> exclude, IEnumerable<Regex> includeDir, IEnumerable<Regex> excludeDir, Configuration cfg)
         {
             foreach (var dir in directories)
             {
                 if (cfg.Verbose) Console.WriteLine("D: {0}", dir);
-                if (includeDir.Any() && !includeDir.Any(r => r.Match(dir).Success)) continue;
-                if (excludeDir.Any() && excludeDir.Any(r => r.Match(dir).Success)) continue;
+                if (!isFirstLevel)
+                {
+                    if (includeDir.Any() && !includeDir.Any(r => r.Match(dir).Success)) continue;
+                    if (excludeDir.Any() && excludeDir.Any(r => r.Match(dir).Success)) continue;
+                }
 
                 foreach (var pattern in cfg.Filter)
                 {
@@ -212,7 +212,7 @@ namespace OSPC
 
                 if (cfg.Recurse)
                 {
-                    CollectFilesRecurse(files, Directory.GetDirectories(dir), include, exclude, includeDir, excludeDir, cfg);
+                    CollectFilesRecurse(files, Directory.GetDirectories(dir), false, include, exclude, includeDir, excludeDir, cfg);
                 }
             }
         }
