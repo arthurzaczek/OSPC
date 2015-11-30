@@ -60,7 +60,6 @@ namespace OSPC
                 ? _cfg.MIN_FRIEND_FINDER_SIMILARITY
                 : result.POI_Similarity - 0.2;
 
-
             var friends = new Dictionary<Submission, FriendOf>();
             foreach (var cp in compareResult)
             {
