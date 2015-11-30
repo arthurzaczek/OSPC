@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<OSPC xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <MIN_MATCH_LENGTH>1000</MIN_MATCH_LENGTH>
+  <MAX_MATCH_DISTANCE>1</MAX_MATCH_DISTANCE>
+  <MIN_COMMON_TOKEN>1</MIN_COMMON_TOKEN>
+  <MIN_FRIEND_FINDER_SIMILARITY>-1</MIN_FRIEND_FINDER_SIMILARITY>
+  <ExcludeDir>\\.git$</ExcludeDir>
+  <ExcludeDir>\\obj$</ExcludeDir>
+</OSPC>

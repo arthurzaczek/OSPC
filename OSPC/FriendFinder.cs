@@ -56,15 +56,20 @@ namespace OSPC
 
         public void Find(OSPCResult result, List<CompareResult> compareResult)
         {
+            var friends = new Dictionary<Submission, FriendOf>();
             var min_friend_finder_similarity = _cfg.MIN_FRIEND_FINDER_SIMILARITY >= 0
                 ? _cfg.MIN_FRIEND_FINDER_SIMILARITY
                 : result.POI_Similarity - 0.2;
 
-            var friends = new Dictionary<Submission, FriendOf>();
-            foreach (var cp in compareResult)
+            // if result.POI_Similarity is 0, min_friend_finder_similarity may become negative.
+            // So every submission is a group and every match is in that group.
+            if (min_friend_finder_similarity > 0)
             {
-                ProcessMatch(friends, cp, cp.A, cp.SimilarityB, min_friend_finder_similarity);
-                ProcessMatch(friends, cp, cp.B, cp.SimilarityA, min_friend_finder_similarity);
+                foreach (var cp in compareResult)
+                {
+                    ProcessMatch(friends, cp, cp.A, cp.SimilarityB, min_friend_finder_similarity);
+                    ProcessMatch(friends, cp, cp.B, cp.SimilarityA, min_friend_finder_similarity);
+                }
             }
 
             result.Friends = friends.Values
