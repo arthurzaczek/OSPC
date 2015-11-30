@@ -25,7 +25,7 @@ namespace OSPCGui.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1000")]
+        [global::System.Configuration.DefaultSettingValueAttribute("10")]
         public int MIN_MATCH_LENGTH {
             get {
                 return ((int)(this["MIN_MATCH_LENGTH"]));
@@ -37,7 +37,7 @@ namespace OSPCGui.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        [global::System.Configuration.DefaultSettingValueAttribute("2")]
         public int MAX_MATCH_DISTANCE {
             get {
                 return ((int)(this["MAX_MATCH_DISTANCE"]));
@@ -49,7 +49,7 @@ namespace OSPCGui.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.85")]
         public double MIN_COMMON_TOKEN {
             get {
                 return ((double)(this["MIN_COMMON_TOKEN"]));

@@ -3,13 +3,13 @@
   <Profiles />
   <Settings>
     <Setting Name="MIN_MATCH_LENGTH" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">1000</Value>
+      <Value Profile="(Default)">10</Value>
     </Setting>
     <Setting Name="MAX_MATCH_DISTANCE" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">1</Value>
+      <Value Profile="(Default)">2</Value>
     </Setting>
     <Setting Name="MIN_COMMON_TOKEN" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">1</Value>
+      <Value Profile="(Default)">0.85</Value>
     </Setting>
     <Setting Name="MIN_FRIEND_FINDER_SIMILARITY" Type="System.Double" Scope="User">
       <Value Profile="(Default)">-1</Value>

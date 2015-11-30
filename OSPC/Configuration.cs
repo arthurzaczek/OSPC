@@ -30,9 +30,9 @@ namespace OSPC
     {
         public Configuration()
         {
-            MIN_MATCH_LENGTH = 1000;
-            MAX_MATCH_DISTANCE = 1;
-            MIN_COMMON_TOKEN = 1;
+            MIN_MATCH_LENGTH = 10;
+            MAX_MATCH_DISTANCE = 2;
+            MIN_COMMON_TOKEN = 0.85;
             MIN_FRIEND_FINDER_SIMILARITY = -1;
 
             Filter = new List<string>();
