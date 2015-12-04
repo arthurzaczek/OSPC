@@ -31,89 +31,99 @@ namespace OSPC
     {
         static void Main(string[] args)
         {
-            var cfg = new Configuration();
-            bool showHelp = false;
-
-            // common dependencies
-            var progress = new ConsoleProgressReporter();
-
-            // changable through config or arguments
-            Reporter.IReporter html = null;
-            Reporter.IReporter console = new Reporter.ConsoleReporter();
-            Tokenizer.ITokenizer tokenizer = new Tokenizer.CLikeTokenizer();
-
-            Console.WriteLine("Open Software Plagiarism Checker");
-            Console.WriteLine("================================");
-            Console.WriteLine("Version {0}", typeof(OSPC.Program).Assembly.GetName().Version);
-            Console.WriteLine();
-            Console.WriteLine("Copyright (C) 2015 Arthur Zaczek at the UAS Technikum Wien, GPL V3");
-            Console.WriteLine("This program comes with ABSOLUTELY NO WARRANTY; see the GPL V3 for details.");
-            Console.WriteLine("This is free software, and you are welcome to redistribute it");
-            Console.WriteLine("under certain conditions; see the GPL V3 for details.");
-            Console.WriteLine();
-
-            var p = new OptionSet()
+            try
             {
-                { "h|?|help", "Prints this help", v => showHelp = true },
-                { "c=", "Reads the given configuration. Note, this switch should be the first argument as it overrides any other argument parsed yet.", v => cfg = LoadConfig(v) },
-                { "write-config=", "Write the current configuration to the given file. Note, this switch should be the last argument.", v => SaveConfig(cfg, v) },
+                var cfg = new Configuration();
+                bool showHelp = false;
 
-                { "f=", "File filter. If -d is specified, then -f defaults to \"*.*.\"", v => cfg.Filter.Add(v) },
-                { "d=", "Specifies a directory where the filer applies. If -f is specified, then -d defaults to \".\"", v => cfg.Dirs.Add(v) },
-                { "include=", "Specifies a regular expression that every file must match. More than one expression is allowed. A file must match any of these expressions.", v => cfg.Include.Add(v) },
-                { "exclude=", "Specifies a regular expression to exclude files. More than one expression is allowed. If a file must match any of these expressions it will be excluded.", v => cfg.Exclude.Add(v) },
-                { "recurse", "Traversals all directories recurse. Use include-dir and exclude-dir to have more control over the selected directories.", v => cfg.Recurse = true },
-                { "include-dir=", "Specifies a regular expression that every file must match. More than one expression is allowed. A file must match any of these expressions.", v => cfg.IncludeDir.Add(v) },
-                { "exclude-dir=", "Specifies a regular expression to exclude files. More than one expression is allowed. If a file must match any of these expressions it will be excluded.", v => cfg.ExcludeDir.Add(v) },
+                // common dependencies
+                var progress = new ConsoleProgressReporter();
 
-                { "detailed", "Print a detailed report to the console", v => console = new Reporter.DetailedConsoleReporter() },
-                { "summary", "Print only a summay to the console. Usefull if --html is used.", v => console = new Reporter.SummaryConsoleReporter() },
-                { "html:", "Saves a html report to the specified directory. Defaults to \"report\"", v => html = new Reporter.Html.HtmlReporter(v, progress) },
+                // changable through config or arguments
+                Reporter.IReporter html = null;
+                Reporter.IReporter console = new Reporter.ConsoleReporter();
+                Tokenizer.ITokenizer tokenizer = new Tokenizer.CLikeTokenizer();
 
-                { "min-match-length=", "Minimum count of matching tokens, including non-matching tokens.", v => cfg.MIN_MATCH_LENGTH = int.Parse(v) },
-                { "max-match-distance=", "Maximum distance between tokens to count as a match. 1 = exact match.", v => cfg.MAX_MATCH_DISTANCE = int.Parse(v) },
-                { "min-common-token=", "Percent of token that must match to count as a match. 1 = every token must match.", v => cfg.MIN_COMMON_TOKEN = double.Parse(v, System.Globalization.CultureInfo.InvariantCulture) },
+                Console.WriteLine("Open Software Plagiarism Checker");
+                Console.WriteLine("================================");
+                Console.WriteLine("Version {0}", typeof(OSPC.Program).Assembly.GetName().Version);
+                Console.WriteLine();
+                Console.WriteLine("Copyright (C) 2015 Arthur Zaczek at the UAS Technikum Wien, GPL V3");
+                Console.WriteLine("This program comes with ABSOLUTELY NO WARRANTY; see the GPL V3 for details.");
+                Console.WriteLine("This is free software, and you are welcome to redistribute it");
+                Console.WriteLine("under certain conditions; see the GPL V3 for details.");
+                Console.WriteLine();
 
-                { "v|verbose", "Verbose output.", v =>  cfg.Verbose = true },
-            };
+                var p = new OptionSet()
+                {
+                    { "h|?|help", "Prints this help", v => showHelp = true },
+                    { "c=", "Reads the given configuration. Note, this switch should be the first argument as it overrides any other argument parsed yet.", v => cfg = LoadConfig(v) },
+                    { "write-config=", "Write the current configuration to the given file. Note, this switch should be the last argument.", v => SaveConfig(cfg, v) },
 
-            var extraFiles = p.Parse(args);
-            // split that, as during parse the reference of cfg may change. 
-            // The compiler might save the reference to the old, overridden 
-            // config instance.
-            cfg.ExtraFiles = extraFiles;
+                    { "f=", "File filter. If -d is specified, then -f defaults to \"*.*.\"", v => cfg.Filter.Add(v) },
+                    { "d=", "Specifies a directory where the filer applies. If -f is specified, then -d defaults to \".\"", v => cfg.Dirs.Add(v) },
+                    { "include=", "Specifies a regular expression that every file must match. More than one expression is allowed. A file must match any of these expressions.", v => cfg.Include.Add(v) },
+                    { "exclude=", "Specifies a regular expression to exclude files. More than one expression is allowed. If a file must match any of these expressions it will be excluded.", v => cfg.Exclude.Add(v) },
+                    { "recurse", "Traversals all directories recurse. Use include-dir and exclude-dir to have more control over the selected directories.", v => cfg.Recurse = true },
+                    { "include-dir=", "Specifies a regular expression that every file must match. More than one expression is allowed. A file must match any of these expressions.", v => cfg.IncludeDir.Add(v) },
+                    { "exclude-dir=", "Specifies a regular expression to exclude files. More than one expression is allowed. If a file must match any of these expressions it will be excluded.", v => cfg.ExcludeDir.Add(v) },
 
-            if (showHelp)
-            {
-                ShowHelp(p);
-                return;
-            }
+                    { "detailed", "Print a detailed report to the console", v => console = new Reporter.DetailedConsoleReporter() },
+                    { "summary", "Print only a summay to the console. Usefull if --html is used.", v => console = new Reporter.SummaryConsoleReporter() },
+                    { "html:", "Saves a html report to the specified directory. Defaults to \"report\"", v => html = new Reporter.Html.HtmlReporter(v, progress) },
 
-            var comparer = new Comparer(cfg, progress);
-            var friendfinder = new FriendFinder(cfg);
-            var watch = Stopwatch.StartNew();
+                    { "min-match-length=", "Minimum count of matching tokens, including non-matching tokens.", v => cfg.MIN_MATCH_LENGTH = int.Parse(v) },
+                    { "max-match-distance=", "Maximum distance between tokens to count as a match. 1 = exact match.", v => cfg.MAX_MATCH_DISTANCE = int.Parse(v) },
+                    { "min-common-token=", "Percent of token that must match to count as a match. 1 = every token must match.", v => cfg.MIN_COMMON_TOKEN = double.Parse(v, System.Globalization.CultureInfo.InvariantCulture) },
 
-            Console.WriteLine("Collecting files");
-            var files = CollectFiles(cfg, tokenizer);
-            Console.WriteLine("  finished; time: {0:n2} sec.", watch.Elapsed.TotalSeconds);
-            if (files.Length == 0)
-            {
-                Console.WriteLine("No files found to compare!");
-            }
-            else
-            {
-                Console.Write("Comparing {0} files ", files.Length);
-                var compareResult = comparer.Compare(files);
+                    { "v|verbose", "Verbose output.", v =>  cfg.Verbose = true },
+                };
+
+                var extraFiles = p.Parse(args);
+                // split that, as during parse the reference of cfg may change. 
+                // The compiler might save the reference to the old, overridden 
+                // config instance.
+                cfg.ExtraFiles = extraFiles;
+
+                if (showHelp)
+                {
+                    ShowHelp(p);
+                    return;
+                }
+
+                var comparer = new Comparer(cfg, progress);
+                var friendfinder = new FriendFinder(cfg);
+                var watch = Stopwatch.StartNew();
+
+                Console.WriteLine("Collecting files");
+                var files = CollectFiles(cfg, tokenizer);
                 Console.WriteLine("  finished; time: {0:n2} sec.", watch.Elapsed.TotalSeconds);
+                if (files.Length == 0)
+                {
+                    Console.WriteLine("No files found to compare!");
+                }
+                else
+                {
+                    Console.Write("Comparing {0} files ", files.Length);
+                    var compareResult = comparer.Compare(files);
+                    Console.WriteLine("  finished; time: {0:n2} sec.", watch.Elapsed.TotalSeconds);
 
-                Console.WriteLine("Creating statistics");
-                var result = OSPCResult.Create(compareResult);
-                friendfinder.Find(result, compareResult);
-                Console.WriteLine("  finished; time: {0:n2} sec.", watch.Elapsed.TotalSeconds);
+                    Console.WriteLine("Creating statistics");
+                    var result = OSPCResult.Create(compareResult);
+                    friendfinder.Find(result, compareResult);
+                    Console.WriteLine("  finished; time: {0:n2} sec.", watch.Elapsed.TotalSeconds);
 
-                Console.WriteLine("Creating reports");
-                CreateReports(html, console, result);
-                Console.WriteLine("  finished in total {0:n2} sec.", watch.Elapsed.TotalSeconds);
+                    Console.WriteLine("Creating reports");
+                    CreateReports(html, console, result);
+                    Console.WriteLine("  finished in total {0:n2} sec.", watch.Elapsed.TotalSeconds);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine();
+                Console.WriteLine("********** Error occurred, exiting **********");
+                Console.WriteLine(ex.ToString());
+                Environment.Exit(1);
             }
         }
 
@@ -164,7 +174,18 @@ namespace OSPC
 
             CollectFilesRecurse(files, cfg.Dirs, true, include, exclude, includeDir, excludeDir, cfg);
 
-            files.AddRange(cfg.ExtraFiles);
+            files.AddRange(cfg.ExtraFiles.Where(f =>
+            {
+                if (File.Exists(f))
+                {
+                    return true;
+                }
+                else
+                {
+                    Console.WriteLine("  ** Warning, file \"{0}\" not found.", f);
+                    return false;
+                }
+            }));
 
             if (cfg.Verbose)
             {
