@@ -211,6 +211,12 @@ namespace OSPC
         {
             foreach (var dir in directories)
             {
+                if(!Directory.Exists(dir))
+                {
+                    // At the first level, this may occour
+                    Console.WriteLine("  ** Warning, directory \"{0}\" not found.", dir);
+                    continue;
+                }
                 if (cfg.Verbose) Console.WriteLine("D: {0}", dir);
                 if (!isFirstLevel)
                 {
