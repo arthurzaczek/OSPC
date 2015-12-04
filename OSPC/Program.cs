@@ -211,7 +211,7 @@ namespace OSPC
         {
             foreach (var dir in directories)
             {
-                if(!Directory.Exists(dir))
+                if (!Directory.Exists(dir))
                 {
                     // At the first level, this may occour
                     Console.WriteLine("  ** Warning, directory \"{0}\" not found.", dir);
@@ -226,7 +226,18 @@ namespace OSPC
 
                 foreach (var pattern in cfg.Filter)
                 {
-                    foreach (var f in Directory.GetFiles(dir, pattern))
+                    string[] dirFiles;
+                    try
+                    {
+                        dirFiles = Directory.GetFiles(dir, pattern);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("  ** Warning: Unable to list directory with patern \"{0}\": {1}", pattern, ex.Message);
+                        continue;
+                    }
+
+                    foreach (var f in dirFiles)
                     {
                         if (cfg.Verbose) Console.WriteLine("  F: {0}", f);
 
