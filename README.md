@@ -7,6 +7,7 @@ Features
 --------
 
 * Supports (currently) any C like language like C, C++, Java or C#. Extendable to any other language.
+* Command line and graphical interface.
 * Configurable: Adapt similarity levels to each kind of submissions. It makes a difference, if it's a basic programming course or a advanced programming course
 * Html Reports: The most powerful report is the Html Report.
 * FriendFinder: The program is able to find groups of similar submissions.
@@ -14,7 +15,11 @@ Features
 Usage
 -----
 
-> Note! When you run the program the first time without a configuration or adapted set of Comparer settings you will only find exact matches that are longer than 1000 Tokens. Each programming course is different. You have to find the right values for your course.
+**Graphical interface**
+
+Run `OSPCGui.exe`
+
+**Command line interface**
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Usage: OSPC [options] { file1 file2 ... }
