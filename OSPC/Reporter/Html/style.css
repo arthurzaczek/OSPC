@@ -102,3 +102,46 @@ a.menu-link {
 
 .friend-detail-col {
 }
+
+/* Highlight */
+.highlight {
+    font-weight: bold;
+}
+
+.color-AA0000 {
+    color: #AA0000;
+}
+.color-00AA00 {
+    color: #00AA00;
+}
+.color-0000AA {
+    color: #0000AA;
+}
+.color-00AAAA {
+    color: #00AAAA;
+}
+.color-AA00AA {
+    color: #AA00AA;
+}
+.color-AAAA00 {
+    color: #AAAA00;
+}
+.color-880000 {
+    color: #880000;
+}
+.color-008800 {
+    color: #008800;
+}
+.color-000088 {
+    color: #000088;
+}
+.color-008888 {
+    color: #008888;
+}
+.color-880088 {
+    color: #880088;
+}
+.color-888800 {
+    color: #888800;
+}
+

@@ -35,8 +35,8 @@ namespace OSPC.Reporter.Html
     {
         public static readonly string[] Colors = new[]
         {
-            "#AA0000", "#00AA00", "#0000AA", "#00AAAA", "#AA00AA", "#AAAA00",
-            "#880000", "#008800", "#000088", "#008888", "#880088", "#888800",
+            "AA0000", "00AA00", "0000AA", "00AAAA", "AA00AA", "AAAA00",
+            "880000", "008800", "000088", "008888", "880088", "888800",
         };
         public static readonly RectangleF GraphRect = new RectangleF(0.0f, 0.0f, 512.0f, 256.0f);
 
@@ -401,7 +401,7 @@ namespace OSPC.Reporter.Html
                 {
                     int end = tokenExtractor(currentMatch.Current).Last.Value.End;
                     // in match
-                    diffHtml.Write("<span style=\"font-weight: bold;color: {0}\">", Colors[currentMatch.Current.Index % Colors.Length]);
+                    diffHtml.Write("<span class=\"highlight color-{0}\">", Colors[currentMatch.Current.Index % Colors.Length]);
 
                     diffHtml.Write(System.Web.HttpUtility.HtmlEncode(content.Substring(idx, end - idx)));
                     diffHtml.Write("</span>");
