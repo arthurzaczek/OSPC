@@ -115,7 +115,9 @@ namespace OSPC
 
         public static double[] CalcDerv2(this double[] lst)
         {
-            var derv_2 = new double[lst.Length - 2];
+            var derv_2 = new double[0];
+            if (lst.Length < 2) return derv_2;
+            derv_2 = new double[lst.Length - 2];
             for (int i = 0; i < lst.Length - 2; i++)
             {
                 derv_2[i] = SlidingAvg(lst, i) - 2 * SlidingAvg(lst, i + 1) + SlidingAvg(lst, i + 2);

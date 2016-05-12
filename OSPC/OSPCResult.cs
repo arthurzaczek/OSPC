@@ -47,21 +47,24 @@ namespace OSPC
             if (lst.Length > 0)
             {
                 result.AVG_Similarity = lst.Average();
-                result.POI_Similarity = lst[lst.CalcDerv2().MaxIndex()];
+                double[] derv2 = lst.CalcDerv2();
+                if (derv2.Length > 0) result.POI_Similarity = lst[derv2.MaxIndex()];
             }
 
             lst = result.Results.Select(i => (double)i.TokenCount).OrderBy(i => i).ToArray();
             if (lst.Length > 0)
             {
                 result.AVG_TokenCount = lst.Average();
-                result.POI_TokenCount = lst[lst.CalcDerv2().MaxIndex()];
+                double[] derv2 = lst.CalcDerv2();
+                if (derv2.Length > 0) result.POI_TokenCount = lst[derv2.MaxIndex()];
             }
 
             lst = result.Results.Select(i => (double)i.TokenCount / (double)i.MatchCount).OrderBy(i => i).ToArray();
             if (lst.Length > 0)
             {
                 result.AVG_TokenPerMatch = lst.Average();
-                result.POI_TokenPerMatch = lst[lst.CalcDerv2().MaxIndex()];
+                double[] derv2 = lst.CalcDerv2();
+                if (derv2.Length > 0) result.POI_TokenPerMatch = lst[derv2.MaxIndex()];
 
             }
             return result;
