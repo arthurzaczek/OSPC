@@ -83,7 +83,7 @@ namespace OSPCGui.ViewModels
 
                     AddMessage("Creating reports");
                     var html = new OSPC.Reporter.Html.HtmlReporter(HtmlReportPath, (IProgressReporter)this);
-                    html.Create(result);
+                    html.Create(this.Configuration, result);
                     System.Diagnostics.Process.Start(System.IO.Path.Combine(html.OutPath, "index.html"));
                     AddMessage(string.Format("  finished in total {0:n2} sec.", watch.Elapsed.TotalSeconds));
 

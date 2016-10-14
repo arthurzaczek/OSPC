@@ -35,6 +35,8 @@ namespace OSPC
             MIN_COMMON_TOKEN = 0.85;
             MIN_FRIEND_FINDER_SIMILARITY = -1;
 
+            MIN_SIMILARITY = 0.5;
+
             Filter = new List<string>();
             Dirs = new List<string>();
             Include = new List<string>();
@@ -59,6 +61,11 @@ namespace OSPC
         /// Min. similarity of the other submission to count as contribution by a friend. if &lt; 0 then the value will be calculated automatically.
         /// </summary>
         public double MIN_FRIEND_FINDER_SIMILARITY { get; set; }
+        /// <summary>
+        /// Minimum similarity of match reports (0 - 1). Default is 0.5 (=50%).
+        /// </summary>
+        [XmlElement]
+        public double MIN_SIMILARITY { get; set; }
 
         [XmlIgnore]
         public bool Verbose { get; set; }

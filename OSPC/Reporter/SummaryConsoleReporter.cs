@@ -25,7 +25,7 @@ namespace OSPC.Reporter
 {
     public class SummaryConsoleReporter : IReporter
     {
-        public void Create(OSPCResult r)
+        public void Create(Configuration cfg, OSPCResult r)
         {
             Console.WriteLine("Resultset: {0}", r.Results.Count);
             if (r.Results.Count > 0)

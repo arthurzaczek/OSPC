@@ -21,6 +21,6 @@ namespace OSPC.Reporter
 {
     public interface IReporter
     {
-        void Create(OSPCResult result);
+        void Create(Configuration cfg, OSPCResult result);
     }
 }

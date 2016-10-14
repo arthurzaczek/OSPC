@@ -71,6 +71,7 @@ namespace OSPC
                     { "detailed", "Print a detailed report to the console", v => console = new Reporter.DetailedConsoleReporter() },
                     { "summary", "Print only a summay to the console. Usefull if --html is used.", v => console = new Reporter.SummaryConsoleReporter() },
                     { "html:", "Saves a html report to the specified directory. Defaults to \"report\"", v => html = new Reporter.Html.HtmlReporter(v, progress) },
+                    { "min-similarity=", "Minimum similarity of match reports (0 - 1). Default is 0.5 (=50%).", v => cfg.MIN_SIMILARITY = double.Parse(v, System.Globalization.CultureInfo.InvariantCulture) },
 
                     { "min-match-length=", "Minimum count of matching tokens, including non-matching tokens.", v => cfg.MIN_MATCH_LENGTH = int.Parse(v) },
                     { "max-match-distance=", "Maximum distance between tokens to count as a match. 1 = exact match.", v => cfg.MAX_MATCH_DISTANCE = int.Parse(v) },
@@ -114,7 +115,7 @@ namespace OSPC
                     Console.WriteLine("  finished; time: {0:n2} sec.", watch.Elapsed.TotalSeconds);
 
                     Console.WriteLine("Creating reports");
-                    CreateReports(html, console, result);
+                    CreateReports(cfg, html, console, result);
                     Console.WriteLine("  finished in total {0:n2} sec.", watch.Elapsed.TotalSeconds);
                 }
             }
@@ -127,13 +128,13 @@ namespace OSPC
             }
         }
 
-        private static void CreateReports(Reporter.IReporter html, Reporter.IReporter console, OSPCResult result)
+        private static void CreateReports(Configuration cfg, Reporter.IReporter html, Reporter.IReporter console, OSPCResult result)
         {
             if (html != null)
             {
-                html.Create(result);
+                html.Create(cfg, result);
             }
-            console.Create(result);
+            console.Create(cfg, result);
         }
 
         private static void SaveConfig(Configuration cfg, string file)

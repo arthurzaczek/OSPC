@@ -25,7 +25,7 @@ namespace OSPC.Reporter
 {
     public class ConsoleReporter : IReporter
     {
-        public void Create(OSPCResult r)
+        public void Create(Configuration cfg, OSPCResult r)
         {
             Console.WriteLine("{0, -20} {1,8} {2, -20} {3,8} {4, 8} {5, 8}", "A", "% A", "B", "% B", "Matches", "Tokens");
 

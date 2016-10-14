@@ -42,6 +42,7 @@ namespace OSPC.Reporter.Html
 
         public string OutPath { get; private set; }
         private readonly IProgressReporter _progress;
+        private Configuration _cfg;
 
         public HtmlReporter(string outPath, IProgressReporter progress)
         {
@@ -49,8 +50,10 @@ namespace OSPC.Reporter.Html
             this._progress = progress;
         }
 
-        public void Create(OSPCResult r)
+        public void Create(Configuration cfg, OSPCResult r)
         {
+            _cfg = cfg;
+
             if (!Directory.Exists(OutPath))
             {
                 Directory.CreateDirectory(OutPath);
@@ -101,7 +104,7 @@ namespace OSPC.Reporter.Html
 #if SINGLE_THREADED
             foreach(var result in r.Results)
 #else
-            Parallel.ForEach(r.Results, result =>
+            Parallel.ForEach(r.Results.Where(i => i.SimilarityA >= _cfg.MIN_SIMILARITY || i.SimilarityB >= _cfg.MIN_SIMILARITY), result =>
 #endif
             {
                 WriteDetail(result, GetDetailFileName(result));
@@ -123,7 +126,7 @@ namespace OSPC.Reporter.Html
                 WriteHeader(html, "OSPC", "", new TupleList<string, string>() { { "friendfinder.html", "Friend Finder" } });
                 WriteSummaryTitle(html);
 
-                foreach (var result in r.Results)
+                foreach (var result in r.Results.Where(i => i.SimilarityA >= _cfg.MIN_SIMILARITY || i.SimilarityB >= _cfg.MIN_SIMILARITY))
                 {
                     WriteSummaryResultLine(html, result, GetDetailFileName(result));
                 }

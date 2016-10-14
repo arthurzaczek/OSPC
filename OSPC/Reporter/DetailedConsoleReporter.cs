@@ -25,7 +25,7 @@ namespace OSPC.Reporter
 {
     public class DetailedConsoleReporter : IReporter
     {
-        public void Create(OSPCResult r)
+        public void Create(Configuration cfg, OSPCResult r)
         {
             foreach (var result in r.Results.Take(10))
             {

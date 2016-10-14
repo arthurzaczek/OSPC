@@ -60,6 +60,7 @@ namespace OSPC
             var min_friend_finder_similarity = _cfg.MIN_FRIEND_FINDER_SIMILARITY >= 0
                 ? _cfg.MIN_FRIEND_FINDER_SIMILARITY
                 : result.POI_Similarity - 0.2;
+            min_friend_finder_similarity = Math.Max(min_friend_finder_similarity, _cfg.MIN_SIMILARITY);
 
             // if result.POI_Similarity is 0, min_friend_finder_similarity may become negative.
             // So every submission is a group and every match is in that group.
