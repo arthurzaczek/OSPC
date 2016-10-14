@@ -357,7 +357,8 @@ namespace OSPC.Reporter.Html
         {
             html.WriteLine("<div class=\"detail-col\">");
             html.WriteLine("<h2>{0}</h2>", Path.GetFileName(result.A.FilePath));
-            html.WriteLine("<div class=\"detail-submission-summary\">Similarity: {0:n2} %<br/>Token: {1}</div>",
+            html.WriteLine("<div class=\"detail-submission-summary\"><a href=\"{0}\">{0}</a><br/>Similarity: {1:n2} %<br/>Token: {2}</div>",
+                result.A.FilePath,
                 result.SimilarityA * 100.0,
                 result.A.Tokens.Length);
 
@@ -373,7 +374,8 @@ namespace OSPC.Reporter.Html
         {
             html.WriteLine("<div class=\"detail-col\">");
             html.WriteLine("<h2>{0}</h2>", Path.GetFileName(result.B.FilePath));
-            html.WriteLine("<div class=\"detail-submission-summary\">Similarity: {0:n2} %<br/>Token: {1}</div>",
+            html.WriteLine("<div class=\"detail-submission-summary\"><a href=\"{0}\">{0}</a><br/>Similarity: {1:n2} %<br/>Token: {2}</div>",
+                result.B.FilePath,
                 result.SimilarityB * 100.0,
                 result.B.Tokens.Length);
 
