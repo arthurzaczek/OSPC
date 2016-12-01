@@ -36,6 +36,7 @@ namespace OSPC
             result.Results = compareResult
                 .Where(r => r.MatchCount > 0)
                 .OrderByDescending(r => Math.Max(r.SimilarityA, r.SimilarityB))
+                .ThenByDescending(r => Math.Min(r.SimilarityA, r.SimilarityB))
                 .Select((item, idx) =>
                 {
                     item.Seal(idx);
