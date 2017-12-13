@@ -9,3 +9,5 @@ TestResults
 *.suo
 /packages
 /OSPC/test_profile.xml
+.vs/
+/Testfiles/roboter

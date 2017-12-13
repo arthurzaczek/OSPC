@@ -115,6 +115,7 @@ namespace OSPC
 
         public static double[] CalcDerv2(this double[] lst)
         {
+            if (lst.Length <= 2) return new double[] { };
             var derv_2 = new double[lst.Length - 2];
             for (int i = 0; i < lst.Length - 2; i++)
             {
